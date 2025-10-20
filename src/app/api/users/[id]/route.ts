@@ -6,7 +6,6 @@ export async function GET(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
-  console.clear();
   const { id } = await params;
   const userId = parseInt(id, 10);
 
@@ -16,7 +15,6 @@ export async function GET(
 
   try {
     const user = await container.userService.findById(userId);
-    console.log("user response", user);
     return NextResponse.json(user, { status: 200 });
   } catch (err) {
     if (err instanceof NotFoundError) {
