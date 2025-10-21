@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { container } from "@/lib/container";
+import { container } from "@/server/lib/container";
 import { NotFoundError } from "@/shared/errors";
 
 export async function GET(

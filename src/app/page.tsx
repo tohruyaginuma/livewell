@@ -1,16 +1,16 @@
 "use client";
 
-import { Table } from "@/components/table";
-import { useMeStore } from "@/stores/use-me-store";
+import { Table } from "@/frontend/components/table";
+import { useMeStore } from "@/frontend/stores/use-me-store";
 import { useEffect } from "react";
-import { DrawerMedicationCreate } from "@/components/drawer-medication-create";
+import { DrawerMedicationCreate } from "@/frontend/components/drawer-medication-create";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { useCreateMedicationDrawerStore } from "@/stores/use-create-medication-drawer-store";
+} from "@/frontend/components/ui/breadcrumb";
+import { Button } from "@/frontend/components/ui/button";
+import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
 
 export default function Home() {
   const { setMe } = useMeStore();
