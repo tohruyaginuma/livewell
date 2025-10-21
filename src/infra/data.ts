@@ -1,4 +1,4 @@
-import { MedicationStatus } from "@/domain/medication";
+import { FREQUENCY } from "@/shared/constants";
 
 export const users = [
   {
@@ -17,14 +17,38 @@ export const users = [
 
 export const medications = [
   {
-    id: "1",
+    id: 1,
     name: "Medication 1",
-    dosage: "10mg",
-    frequency: "daily",
-    startDate: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    name: "Medication 2",
+  },
+  {
+    id: 3,
+    name: "Medication 3",
+  },
+];
+
+export const userMedication = [
+  {
+    id: 1,
+    userId: users[0].id,
+    medicationId: medications[0].id,
     quantityReceived: 10,
+    startDate: new Date().toISOString(),
+    dosage: 10,
+    frequency: FREQUENCY.DAILY,
     daysSupply: 30,
-    user: users[0],
-    status: MedicationStatus.ON_TRACK,
+  },
+];
+
+export const userMedicationStatus = [
+  {
+    id: 1,
+    userId: users[0].id,
+    userMedicationId: userMedication[0].id,
+    taken: true,
+    takenDate: new Date().toISOString(),
   },
 ];
