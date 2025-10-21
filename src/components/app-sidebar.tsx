@@ -19,8 +19,8 @@ import { useMeStore } from "@/stores/use-me-store";
 const data = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "#",
+      title: "Medications",
+      url: "/",
       icon: IconDashboard,
     },
   ],
@@ -40,7 +40,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="/">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Live well inc.</span>
+                <span className="text-base font-semibold">
+                  Medications Management
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

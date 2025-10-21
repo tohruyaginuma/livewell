@@ -9,3 +9,9 @@ export const MEDICATION_STATUS = {
   ON_TRACK: 1,
   RUNNING_LOW: 2,
 };
+
+export const MEDICATION_STATUS_LABEL = {
+  [MEDICATION_STATUS.OVERDUE]: "Overdue",
+  [MEDICATION_STATUS.ON_TRACK]: "On Track",
+  [MEDICATION_STATUS.RUNNING_LOW]: "Running Low",
+};

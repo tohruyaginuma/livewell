@@ -1,32 +1,114 @@
+"use client";
+
 import {
   Table as TableComponent,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Progress } from "@/components/ui/progress";
+import { IconEye } from "@tabler/icons-react";
+import { Badge } from "@/components/ui/badge";
+import { MEDICATION_STATUS_LABEL } from "@/shared/constants";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export const Table = () => {
+  const router = useRouter();
+  const items = [
+    {
+      id: 1,
+      name: "Medication 1",
+      dosage: 10,
+      frequency: "Daily",
+      daysSupply: 30,
+    },
+    {
+      id: 2,
+      name: "Medication 2",
+      dosage: 10,
+      frequency: "Daily",
+      daysSupply: 30,
+    },
+    {
+      id: 3,
+      name: "Medication 3",
+      dosage: 10,
+      frequency: "Daily",
+      daysSupply: 30,
+    },
+    {
+      id: 4,
+      name: "Medication 4",
+      dosage: 10,
+      frequency: "Daily",
+      daysSupply: 30,
+    },
+  ];
+
+  const handleView = (id: number) => {
+    console.log(`Viewing medication ${id}`);
+    router.push(`/medications/${id}`);
+  };
+
   return (
     <TableComponent>
-      <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Remaining Supply</TableHead>
+          <TableHead>Next Refill</TableHead>
+          <TableHead>Refill Alert</TableHead>
+          <TableHead>Remaining</TableHead>
+          <TableHead>Adherence</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell className="font-medium">INV001</TableCell>
-          <TableCell>Paid</TableCell>
-          <TableCell>Credit Card</TableCell>
-          <TableCell className="text-right">$250.00</TableCell>
-        </TableRow>
+        {items.map((item) => (
+          <TableRow key={item.id}>
+            <TableCell className="font-medium">{item.name}</TableCell>
+            <TableCell>100</TableCell>
+            <TableCell>2025-01-01</TableCell>
+            <TableCell>
+              <Badge
+                className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
+                variant="destructive"
+              >
+                {MEDICATION_STATUS_LABEL[0]}
+              </Badge>
+              <Badge
+                className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
+                variant="default"
+              >
+                {MEDICATION_STATUS_LABEL[1]}
+              </Badge>
+              <Badge
+                className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
+                variant="secondary"
+              >
+                {MEDICATION_STATUS_LABEL[2]}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <Progress value={60} /> 60/100
+            </TableCell>
+            <TableCell className="text-center">60%</TableCell>
+            <TableCell className="text-right">
+              <Button
+                asChild
+                variant="outline"
+                onClick={() => handleView(items[0].id)}
+              >
+                <div className="flex items-center gap-2">
+                  <IconEye />
+                  View
+                </div>
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </TableComponent>
   );
