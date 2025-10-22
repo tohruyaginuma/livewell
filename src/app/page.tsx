@@ -2,7 +2,7 @@
 
 import { Table } from "@/frontend/components/table";
 import { useMeStore } from "@/frontend/stores/use-me-store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DrawerMedicationCreate } from "@/frontend/components/drawer-medication-create";
 import {
   Breadcrumb,
@@ -11,14 +11,20 @@ import {
 } from "@/frontend/components/ui/breadcrumb";
 import { Button } from "@/frontend/components/ui/button";
 import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
+import { UserMedicationResponse } from "@/server/service/user-medication-response";
 
 export default function Home() {
   const { setMe } = useMeStore();
   const { setIsOpen } = useCreateMedicationDrawerStore();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [userMedications, setUserMedications] = useState<
+    UserMedicationResponse[]
+  >([]);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch("http://localhost:3000/api/users/1", {
           headers: {
             "Content-Type": "application/json",
@@ -26,11 +32,21 @@ export default function Home() {
         });
         const userData = await response.json();
         setMe(userData.id, userData.name);
+
+        const responseMedications = await fetch(
+          `http://localhost:3000/api/users/${userData.id}/medications`,
+        );
+
+        const userMedications = await responseMedications.json();
+        setUserMedications(userMedications);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchUser();
+
+    fetchData();
   }, [setMe]);
 
   return (
@@ -50,7 +66,7 @@ export default function Home() {
           Add Medication
         </Button>
       </div>
-      <Table />
+      <Table items={userMedications} isLoading={isLoading} />
       <DrawerMedicationCreate />
     </>
   );
