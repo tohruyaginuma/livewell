@@ -10,7 +10,7 @@ export class UserMedicationResponse {
   readonly medicationId: number;
   readonly medicationName: string;
   readonly remainingSupply: number;
-  readonly nextRefill: Date;
+  readonly nextRefill: string;
   readonly refillStatus: RefillStatus;
   readonly adherence: number;
   readonly quantityReceived: number;
@@ -29,7 +29,7 @@ export class UserMedicationResponse {
     medicationId: number;
     medicationName: string;
     remainingSupply: number;
-    nextRefill: Date;
+    nextRefill: string;
     refillStatus: RefillStatus;
     adherence: number;
     quantityReceived: number;
@@ -37,10 +37,23 @@ export class UserMedicationResponse {
     this.id = id;
     this.medicationId = medicationId;
     this.medicationName = medicationName;
-    this.remainingSupply = remainingSupply;
+    this.remainingSupply = Math.max(0, remainingSupply);
     this.nextRefill = nextRefill;
     this.refillStatus = refillStatus;
-    this.adherence = adherence;
+    this.adherence = Math.min(100, Math.max(0, Math.round(adherence)));
     this.quantityReceived = quantityReceived;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      medicationId: this.medicationId,
+      medicationName: this.medicationName,
+      remainingSupply: this.remainingSupply,
+      nextRefill: this.nextRefill,
+      refillStatus: this.refillStatus,
+      adherence: this.adherence,
+      quantityReceived: this.quantityReceived,
+    };
   }
 }

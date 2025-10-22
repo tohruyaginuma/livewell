@@ -1,17 +1,19 @@
-import type { Medication } from "@/server/domain/medication";
+import type { UserId } from "@/server/domain/user";
 import type { IMedicationRepository } from "@/server/domain/medication-repository";
 import type { IUserMedicationRepository } from "@/server/domain/user-medication-repository";
 import type { IUserMedicationStatusRepository } from "@/server/domain/user-medication-status-repository";
-import type { UserId } from "@/server/domain/user";
-import type { UserMedicationStatus } from "@/server/domain/user-medication-status";
-import { UserMedicationResponse } from "@/server/service/user-medication-response";
+import type { Medication } from "@/server/domain/medication";
 import type { UserMedication } from "@/server/domain/user-medication";
-import dayjs, { Dayjs } from "dayjs";
-import utc from "dayjs/plugin/utc";
-import { MEDICATION_STATUS } from "@/shared/constants";
-import type { RefillStatus } from "@/server/service/user-medication-response";
+import type { UserMedicationStatus } from "@/server/domain/user-medication-status";
 
-dayjs.extend(utc);
+import {
+  UserMedicationResponse,
+  type RefillStatus,
+} from "@/server/service/user-medication-response";
+import { UserMedicationCreateResponse } from "@/server/service/user-medication-create-response";
+import { MEDICATION_STATUS } from "@/shared/constants";
+
+import dayjs, { Dayjs } from "dayjs";
 
 export class UserMedicationService {
   readonly #userMedicationRepository: IUserMedicationRepository;
@@ -29,17 +31,11 @@ export class UserMedicationService {
   }
 
   private getRefillStatus(today: Dayjs, nextRefill: Dayjs): RefillStatus {
-    const daysLeft = nextRefill.diff(today, "day");
-
     const THRESHOLD_DAYS = 7;
-
-    if (daysLeft <= 0) {
-      return MEDICATION_STATUS.OVERDUE;
-    } else if (daysLeft <= THRESHOLD_DAYS) {
-      return MEDICATION_STATUS.RUNNING_LOW;
-    } else {
-      return MEDICATION_STATUS.ON_TRACK;
-    }
+    const daysLeft = nextRefill.diff(today, "day");
+    if (daysLeft < 0) return MEDICATION_STATUS.OVERDUE;
+    if (daysLeft <= THRESHOLD_DAYS) return MEDICATION_STATUS.RUNNING_LOW;
+    return MEDICATION_STATUS.ON_TRACK;
   }
 
   async getUserMedicationsByUserId(
@@ -47,69 +43,126 @@ export class UserMedicationService {
   ): Promise<ReadonlyArray<UserMedicationResponse>> {
     const userMedications =
       await this.#userMedicationRepository.findAllByUserId(userId);
-
-    if (userMedications.length === 0) {
-      return [];
-    }
+    if (userMedications.length === 0) return [];
 
     const medicationIds = [
       ...new Set(userMedications.map((um) => um.medicationId)),
     ];
-
-    const [medications, userMedicationStatus] = await Promise.all([
+    const medications: Medication[] =
       medicationIds.length > 0
-        ? this.#medicationRepository.findByIds(medicationIds)
-        : Promise.resolve<Medication[]>([]),
-      this.#userMedicationStatusRepository.findAllByUserId(userId),
-    ]);
-
-    console.log("userMedicationStatus", userMedicationStatus);
-
+        ? await this.#medicationRepository.findByIds(medicationIds)
+        : [];
     const medicationById = new Map<number, Medication>(
       medications.map((m) => [m.id, m]),
     );
 
-    const statusByUserMedicationId = new Map<number, UserMedicationStatus>(
-      userMedicationStatus.map((s) => [s.userMedicationId, s]),
-    );
+    const statuses: UserMedicationStatus[] =
+      await this.#userMedicationStatusRepository.findAllByIds(
+        userMedications.map((um) => um.id),
+      );
 
-    console.log("statusByUserMedicationId", statusByUserMedicationId);
+    const statusesByUM = new Map<number, UserMedicationStatus[]>();
+    for (const s of statuses) {
+      const arr = statusesByUM.get(s.userMedicationId) ?? [];
+      arr.push(s);
+      statusesByUM.set(s.userMedicationId, arr);
+    }
 
-    const result: UserMedicationResponse[] = userMedications.map(
-      (um: UserMedication) => {
-        const med = medicationById.get(um.medicationId);
-        const st = statusByUserMedicationId.get(um.id);
+    const today = dayjs();
 
-        const start = dayjs(um.startDate);
-        const today = dayjs();
-        const spanDays = today.diff(start, "day");
-        console.log("um.startDate", um.startDate);
-        console.log("start", start);
-        console.log("today", today);
-        console.log("spanDays", spanDays);
+    const result = userMedications.map((um: UserMedication) => {
+      const med = medicationById.get(um.medicationId);
+      const start = dayjs(um.startDate, "YYYY-MM-DD");
+      const elapsedDaysRaw = Math.max(0, today.diff(start, "day") + 1);
+      const elapsedDays = Math.min(elapsedDaysRaw, um.daysSupply);
+      const expected = elapsedDays * um.frequency;
 
-        const daysLeft = um.quantityReceived / (um.dosage * spanDays);
-        const nextRefill = today.add(daysLeft, "day");
+      const logs = statusesByUM.get(um.id) ?? [];
+      const takenByDay = new Map<string, number>();
+      for (const s of logs) {
+        const d = s.takenDate;
+        takenByDay.set(d, (takenByDay.get(d) ?? 0) + 1);
+      }
+      const taken = Array.from(takenByDay.values())
+        .map((cnt) => Math.min(cnt, um.frequency))
+        .reduce((a, b) => a + b, 0);
 
-        const refillStatus = this.getRefillStatus(today, nextRefill);
+      const dailyUsage = um.dosage * um.frequency;
+      const dosesConsumed = taken * um.dosage;
+      const remainingSupply = Math.max(0, um.quantityReceived - dosesConsumed);
+      const daysLeft =
+        dailyUsage === 0 ? 0 : Math.floor(remainingSupply / dailyUsage);
+      const nextRefill = today.add(daysLeft, "day");
+      const refillStatus = this.getRefillStatus(today, nextRefill);
+      const adherence =
+        expected === 0 ? 100 : Math.round((taken / expected) * 100);
 
-        const remainingSupply = um.quantityReceived - spanDays * um.dosage;
-
-        const adherence = st?.takenDate ? 100 : 0;
-
-        return new UserMedicationResponse({
-          id: um.id,
-          medicationId: um.medicationId,
-          medicationName: med?.name ?? "",
-          nextRefill: nextRefill.toDate(),
-          remainingSupply: remainingSupply < 0 ? 0 : remainingSupply,
-          quantityReceived: um.quantityReceived,
-          refillStatus,
-          adherence,
-        });
-      },
-    );
+      return new UserMedicationResponse({
+        id: um.id,
+        medicationId: um.medicationId,
+        medicationName: med?.name ?? "",
+        nextRefill: nextRefill.toISOString(),
+        remainingSupply,
+        quantityReceived: um.quantityReceived,
+        refillStatus,
+        adherence,
+      });
+    });
 
     return result;
+  }
+
+  async createUserMedication(
+    userId: UserId,
+    name: string,
+    quantityReceived: number,
+    dosage: number,
+    frequency: number,
+    startDate: string,
+    daysSupply: number,
+  ): Promise<UserMedicationCreateResponse> {
+    const createdMedication = await this.#medicationRepository.create(
+      new (
+        Object.getPrototypeOf({}).constructor as {
+          new (id: number, name: string): Medication;
+        }
+      )(0, name),
+    );
+
+    const createdUserMedication = await this.#userMedicationRepository.create(
+      new (
+        Object.getPrototypeOf({}).constructor as {
+          new (
+            id: number,
+            userId: UserId,
+            medicationId: number,
+            quantityReceived: number,
+            dosage: number,
+            frequency: number,
+            daysSupply: number,
+            startDate: string,
+          ): UserMedication;
+        }
+      )(
+        0,
+        userId,
+        createdMedication.id,
+        quantityReceived,
+        dosage,
+        frequency,
+        daysSupply,
+        startDate,
+      ),
+    );
+
+    return new UserMedicationCreateResponse({
+      id: createdUserMedication.id,
+      medicationId: createdUserMedication.medicationId,
+      medicationName: createdMedication.name,
+      quantityReceived: createdUserMedication.quantityReceived,
+      dosage: createdUserMedication.dosage,
+      startDate: dayjs(createdUserMedication.startDate, "YYYY-MM-DD").toDate(),
+      daysSupply: createdUserMedication.daysSupply,
+    });
   }
 }
