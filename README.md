@@ -4,8 +4,7 @@
 
 A web application designed to help users manage their medications, track schedules, and monitor refills with ease.
 
-<img src="./docs/screen.png" alt="Application Screenshot" width="100%" />
-
+![Application Screenshot](./docs/screen.png)
 ---
 
 ## Getting Started Locally
@@ -26,8 +25,7 @@ pnpm dev
 
 ## Application Architecture
 
-<img src="./docs/app.png" alt="Application Architecture Diagram" width="50%" />
-
+![Application Architecture Diagram](./docs/app.png)
 ---
 
 ## Pages
