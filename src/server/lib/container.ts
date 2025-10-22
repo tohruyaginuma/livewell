@@ -3,7 +3,7 @@ import "server-only";
 import { User } from "@/server/domain/user";
 import {
   medications,
-  userMedicationStatus,
+  userMedicationStatuses,
   userMedications,
   users,
 } from "@/server/infra/data";
@@ -17,31 +17,31 @@ import { MedicationRepository } from "../repository/medication";
 import { UserMedicationStatus } from "../domain/user-medication-status";
 import { UserMedicationStatusRepository } from "../repository/user-medication-status";
 
-const domainUsers: ReadonlyArray<User> = users.map(
-  (user) => new User(user.id, user.name),
-);
+const domainUsers: User[] = users.map((user) => new User(user.id, user.name));
 
-const domainUserMedications: ReadonlyArray<UserMedication> =
-  userMedications.map((userMedication) => {
+const domainUserMedications: UserMedication[] = userMedications.map(
+  (userMedication) => {
     return new UserMedication(
       userMedication.id,
       userMedication.userId,
       userMedication.medicationId,
       userMedication.quantityReceived,
       userMedication.dosage,
+      userMedication.frequency,
+      userMedication.daysSupply,
       userMedication.startDate,
     );
-  });
+  },
+);
 
-const domainMedications: ReadonlyArray<Medication> = medications.map(
+const domainMedications: Medication[] = medications.map(
   (medication) => new Medication(medication.id, medication.name),
 );
 
-const domainUserMedicationStatus: ReadonlyArray<UserMedicationStatus> =
-  userMedicationStatus.map((userMedicationStatus) => {
+const domainUserMedicationStatuses: UserMedicationStatus[] =
+  userMedicationStatuses.map((userMedicationStatus) => {
     return new UserMedicationStatus(
       userMedicationStatus.id,
-      userMedicationStatus.userId,
       userMedicationStatus.userMedicationId,
       userMedicationStatus.takenDate,
     );
@@ -53,7 +53,7 @@ const userMedicationRepository = new UserMedicationRepository(
 );
 const medicationRepository = new MedicationRepository(domainMedications);
 const userMedicationStatusRepository = new UserMedicationStatusRepository(
-  domainUserMedicationStatus,
+  domainUserMedicationStatuses,
 );
 
 const userService = new UserService(userRepository);
