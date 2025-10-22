@@ -12,6 +12,7 @@ import {
 import { Button } from "@/frontend/components/ui/button";
 import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
 import { UserMedicationResponse } from "@/server/service/user-medication-response";
+import { API_URL } from "@/shared/constants";
 
 export default function Home() {
   const { setMe } = useMeStore();
@@ -25,20 +26,16 @@ export default function Home() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:3000/api/users/1", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const userData = await response.json();
+        const userId = 1;
+        const user = await fetch(`${API_URL}/users/${userId}`);
+        const userData = await user.json();
         setMe(userData.id, userData.name);
 
-        const responseMedications = await fetch(
-          `http://localhost:3000/api/users/${userData.id}/medications`,
+        const userMedications = await fetch(
+          `${API_URL}/users/${userId}/medications`,
         );
-
-        const userMedications = await responseMedications.json();
-        setUserMedications(userMedications);
+        const userMedicationsData = await userMedications.json();
+        setUserMedications(userMedicationsData);
       } catch (error) {
         console.error(error);
       } finally {

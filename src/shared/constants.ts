@@ -1,3 +1,5 @@
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
 export const MEDICATION_STATUS = {
   OVERDUE: 0,
   ON_TRACK: 1,
