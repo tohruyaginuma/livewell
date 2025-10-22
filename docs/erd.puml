@@ -1,0 +1,38 @@
+@startuml
+
+entity "users" as Users {
+  id : number
+  --
+  name : string
+}
+
+entity "medications" as Medications {
+  id : number
+  --
+  name : string
+}
+
+entity "user_medications" as UserMedications {
+  id : number
+  --
+  quantity_received : number
+  dosage : number
+  frequency : number
+  days_supply : number
+  start_date : Date
+  user_id : number 
+  medication_id : number
+}
+
+entity "user_medication_statuses" as UserMedicationStatuses {
+  id : number
+  --
+  taken_date : Date
+  user_medication_id : number
+}
+
+Users ||--o{ UserMedications
+Medications ||--o{ UserMedications
+UserMedications ||--o{ UserMedicationStatuses
+
+@enduml

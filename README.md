@@ -1,36 +1,203 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Medication Management Application
 
-## Getting Started
+## Overview
 
-First, run the development server:
+A web application designed to help users manage their medications, track schedules, and monitor refills with ease.
+
+<img src="./docs/screen.png" alt="Application Screenshot" width="100%" />
+
+---
+
+## Getting Started Locally
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Run for Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Application Architecture
 
-To learn more about Next.js, take a look at the following resources:
+<img src="./docs/app.png" alt="Application Architecture Diagram" width="50%" />
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Pages
 
-## Deploy on Vercel
+| Page              | Path                            | Description                |
+|-------------------|---------------------------------|----------------------------|
+| Medication List   | `/`                             | View all medications       |
+| Medication Detail | `/medications/:medicationId`    | Detailed view of medication|
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Database Schema
+
+![Entity Relationship Diagram](./docs/erd.png)
+
+---
+
+## API Documentation
+
+### GET `/users/:userId`
+
+**Request:**  
+_No body required_
+
+**Response:**
+```json
+{
+    "userId": number,
+    "userName": string
+}
+```
+
+---
+
+### GET `/users/:userId/medications`
+
+**Request:**  
+_No body required_
+
+**Response:**
+```json
+{
+    "medicationId": string,
+    "name": string,
+    "remaining": number,
+    "quantityReceived": number,
+    "nextRefill": string,
+    "refillStatus": number,
+    "adherence": number
+}
+```
+
+---
+
+### POST `/users/:userId/medications`
+
+**Request:**
+```json
+{
+    "name": string,
+    "dosage": number,
+    "frequency": number,
+    "quantityReceived": number,
+    "daysSupply": number,
+    "startDate": string
+}
+```
+
+**Response:**
+```json
+{
+    "id": number,
+    "name": string,
+    "dosage": number,
+    "frequency": number,
+    "quantityReceived": number,
+    "daysSupply": number,
+    "startDate": string
+}
+```
+
+---
+
+### GET `/users/:userId/medications/:userMedicationId`
+
+**Request:**  
+_No body required_
+
+**Response:**
+```json
+{
+    "id": number,
+    "name": string,
+    "dosage": number,
+    "frequency": number,
+    "quantityReceived": number,
+    "daysSupply": number,
+    "startDate": string,
+    "remaining": number,
+    "nextRefill": string,
+    "refillStatus": number,
+    "adherence": number
+}
+```
+
+---
+
+### PUT `/users/:userId/medications/:userMedicationId`
+
+**Request:**
+```json
+{
+    "name": string,
+    "dosage": number,
+    "frequency": number,
+    "quantityReceived": number,
+    "daysSupply": number,
+    "startDate": string
+}
+```
+
+**Response:**
+```json
+{
+    "id": number,
+    "name": string,
+    "dosage": number,
+    "frequency": number,
+    "quantityReceived": number,
+    "daysSupply": number,
+    "startDate": string
+}
+```
+
+---
+
+### DELETE `/users/:userId/medications/:userMedicationId`
+
+**Request:**  
+_No body required_
+
+**Response:**  
+HTTP 204 No Content
+
+---
+
+### POST `/users/:userId/medications/:userMedicationId/taken`
+
+**Request:**
+```json
+{
+    "takenDate": string
+}
+```
+
+**Response:**
+```json
+{
+    "id": number,
+    "takenDate": string
+}
+```
+
+---
+
+### DELETE `/users/:userId/medications/:userMedicationId/taken/:takenId`
+
+**Request:**  
+_No body required_
+
+**Response:**  
+HTTP 204 No Content
+
