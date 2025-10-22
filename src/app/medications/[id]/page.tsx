@@ -8,14 +8,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/frontend/components/ui/breadcrumb";
-import { Badge } from "@/frontend/components/ui/badge";
-import { MEDICATION_STATUS_LABEL } from "@/shared/constants";
 import { Calendar } from "@/frontend/components/ui/calendar";
 import { useState } from "react";
 import { Button } from "@/frontend/components/ui/button";
+import { DeleteMedicationAlertDialog } from "@/frontend/components/delete-medication-alert-dialog";
+import { useDeleteMedicationAlertStore } from "@/frontend/stores/use-delete-medication-alert-store";
+import { useEditMedicationDrawerStore } from "@/frontend/stores/use-edit-medication-drawer-store";
+import { DrawerMedicationEdit } from "@/frontend/components/drawer-medication-edit";
+import { StatusBadge } from "@/frontend/components/status-badge";
 
 export default function MedicationPage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const { setIsOpen: setIsOpenDeleteMedicationAlert } =
+    useDeleteMedicationAlertStore();
+  const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
   return (
     <>
       <div className="flex justify-between items-center">
@@ -35,7 +41,9 @@ export default function MedicationPage() {
           <Button
             size="sm"
             className="hidden sm:flex"
-            onClick={() => {}}
+            onClick={() => {
+              setIsOpenDeleteMedicationAlert(true);
+            }}
             variant="destructive"
           >
             Delete Medication
@@ -44,35 +52,20 @@ export default function MedicationPage() {
             variant="outline"
             size="sm"
             className="hidden sm:flex"
-            onClick={() => {}}
+            onClick={() => {
+              setIsOpenEditMedication(true);
+            }}
           >
             Edit Medication
           </Button>
         </div>
       </div>
-
       <div>
         <p className="text-2xl font-bold">Medication name</p>
-        <Badge
-          className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
-          variant="destructive"
-        >
-          {MEDICATION_STATUS_LABEL[0]}
-        </Badge>
-        <Badge
-          className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
-          variant="default"
-        >
-          {MEDICATION_STATUS_LABEL[1]}
-        </Badge>
-        <Badge
-          className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
-          variant="secondary"
-        >
-          {MEDICATION_STATUS_LABEL[2]}
-        </Badge>
+        <StatusBadge status={0} />
+        <StatusBadge status={1} />
+        <StatusBadge status={2} />
       </div>
-
       <div className="flex gap-8">
         <div>
           <Calendar
@@ -117,6 +110,9 @@ export default function MedicationPage() {
           <dd>2 tablets daily</dd>
         </dl>
       </div>
+
+      <DeleteMedicationAlertDialog />
+      <DrawerMedicationEdit />
     </>
   );
 }
