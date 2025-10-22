@@ -1,5 +1,9 @@
 # Medication Management Application
 
+## Live Demo
+Try the deployed app on Vercel:  
+👉 [https://medication-management-app-9z5u.vercel.app/](https://medication-management-app-9z5u.vercel.app/)
+
 ## Overview
 
 A web application designed to help users manage their medications, track schedules, and monitor refills with ease.
