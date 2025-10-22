@@ -2,7 +2,13 @@ import { Drawer } from "@/frontend/components/drawer";
 import { useEditMedicationDrawerStore } from "@/frontend/stores/use-edit-medication-drawer-store";
 import { FormMedication } from "./form-medication";
 
-export const DrawerMedicationEdit = () => {
+type props = {
+  callback: () => void;
+};
+
+export const DrawerMedicationEdit = (props: props) => {
+  const { callback } = props;
+
   const { isOpen, setIsOpen } = useEditMedicationDrawerStore();
 
   return (
@@ -12,7 +18,7 @@ export const DrawerMedicationEdit = () => {
       title="Edit Medication"
       description="Edit a medication"
     >
-      <FormMedication />
+      <FormMedication callback={callback} />
     </Drawer>
   );
 };

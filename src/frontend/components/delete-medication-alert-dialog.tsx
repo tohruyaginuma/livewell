@@ -1,7 +1,12 @@
 import { useDeleteMedicationAlertStore } from "@/frontend/stores/use-delete-medication-alert-store";
 import { AlertDialog } from "./alert-dialog";
 
-export const DeleteMedicationAlertDialog = () => {
+type props = {
+  callback: () => Promise<void>;
+};
+
+export const DeleteMedicationAlertDialog = (props: props) => {
+  const { callback } = props;
   const { isOpen, setIsOpen } = useDeleteMedicationAlertStore();
 
   return (
@@ -10,9 +15,7 @@ export const DeleteMedicationAlertDialog = () => {
       description="Are you sure you want to delete this medication?"
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      onConfirm={async () => {
-        console.log("Delete medication");
-      }}
+      onConfirm={callback}
     />
   );
 };

@@ -2,7 +2,7 @@
 
 import { Table } from "@/frontend/components/table";
 import { useMeStore } from "@/frontend/stores/use-me-store";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DrawerMedicationCreate } from "@/frontend/components/drawer-medication-create";
 import {
   Breadcrumb,
@@ -22,29 +22,29 @@ export default function Home() {
     UserMedicationResponse[]
   >([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const userId = 1;
-        const user = await fetch(`${API_URL}/api/users/${userId}/`);
-        const userData = await user.json();
-        setMe(userData.id, userData.name);
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const userId = 1;
+      const user = await fetch(`${API_URL}/api/users/${userId}/`);
+      const userData = await user.json();
+      setMe(userData.id, userData.name);
 
-        const userMedications = await fetch(
-          `${API_URL}/api/users/${userId}/medications`,
-        );
-        const userMedicationsData = await userMedications.json();
-        setUserMedications(userMedicationsData);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
+      const userMedications = await fetch(
+        `${API_URL}/api/users/${userId}/medications`,
+      );
+      const userMedicationsData = await userMedications.json();
+      setUserMedications(userMedicationsData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [setMe]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <>
@@ -64,7 +64,12 @@ export default function Home() {
         </Button>
       </div>
       <Table items={userMedications} isLoading={isLoading} />
-      <DrawerMedicationCreate />
+      <DrawerMedicationCreate
+        callback={() => {
+          fetchData();
+          setIsOpen(false);
+        }}
+      />
     </>
   );
 }

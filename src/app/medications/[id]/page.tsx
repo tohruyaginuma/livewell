@@ -16,12 +16,37 @@ import { useDeleteMedicationAlertStore } from "@/frontend/stores/use-delete-medi
 import { useEditMedicationDrawerStore } from "@/frontend/stores/use-edit-medication-drawer-store";
 import { DrawerMedicationEdit } from "@/frontend/components/drawer-medication-edit";
 import { StatusBadge } from "@/frontend/components/status-badge";
+import { toast } from "sonner";
+import { Progress } from "@/frontend/components/ui/progress";
+import { DtItem } from "@/frontend/components/dt-item";
+import { Separator } from "@/frontend/components/ui/separator";
 
 export default function MedicationPage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+
   const { setIsOpen: setIsOpenDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
   const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
+
+  const onClickDeleteMedication = async () => {
+    toast.success("Medication deleted successfully");
+    setIsOpenDeleteMedicationAlert(false);
+  };
+
+  const onClickEditMedication = async () => {
+    toast.success("Medication updated successfully");
+    setIsOpenEditMedication(false);
+  };
+
+  const onClickTakenDose = async () => {
+    toast.success("Taken dose successfully");
+  };
+
+  const onClickCancelTakenDose = async () => {
+    toast.success("Cancelled taken dose");
+  };
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -60,59 +85,63 @@ export default function MedicationPage() {
           </Button>
         </div>
       </div>
-      <div>
-        <p className="text-2xl font-bold">Medication name</p>
-        <StatusBadge status={0} />
-        <StatusBadge status={1} />
-        <StatusBadge status={2} />
+
+      <div className="flex flex-col gap-2">
+        <div className="flex  items-center gap-4">
+          <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+            Medication Name
+          </h1>
+
+          <StatusBadge status={1} />
+        </div>
+        <div className="flex flex-col w-1/4">
+          <Progress value={100} />
+          <span className="text-muted-foreground text-sm">
+            Dose/Week: 10/10
+          </span>
+        </div>
       </div>
-      <div className="flex gap-8">
-        <div>
+
+      <div className="flex gap-12">
+        <dl className="flex flex-col gap-2">
+          <DtItem label="Dosage" value="2 tablets daily" />
+          <DtItem label="Frequency" value="2 tablets daily" />
+          <DtItem label="start date" value="2 tablets daily" />
+          <DtItem label="quantity received" value="2 tablets daily" />
+          <DtItem label="days’ supply." value="2 tablets daily" />
+          <DtItem label="current status" value="2 tablets daily" />
+          <DtItem label="calculate refill dates" value="2 tablets daily" />
+          <DtItem label="doses remaining" value="2 tablets daily" />
+          <DtItem label="medication remaining" value="2 tablets daily" />
+        </dl>
+        <div className="flex flex-col gap-2">
           <Calendar
             mode="single"
             selected={date}
             onSelect={setDate}
             className="rounded-lg border"
           />
+          <Button
+            variant="default"
+            size="sm"
+            className="hidden sm:flex"
+            onClick={onClickTakenDose}
+          >
+            Taken dose
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="hidden sm:flex"
+            onClick={onClickCancelTakenDose}
+          >
+            Cancel taken dose
+          </Button>
         </div>
-
-        <dl>
-          <dt>Dosage</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>Frequency</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>start date</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt> quantity received</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>days’ supply.</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>current status</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>calculate refill dates</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>doses remaining</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>medication remaining</dt>
-          <dd>2 tablets daily</dd>
-
-          <dt>
-            Trigger visual or text alerts when a refill is needed within 7 days
-          </dt>
-          <dd>2 tablets daily</dd>
-        </dl>
       </div>
 
-      <DeleteMedicationAlertDialog />
-      <DrawerMedicationEdit />
+      <DeleteMedicationAlertDialog callback={onClickDeleteMedication} />
+      <DrawerMedicationEdit callback={onClickEditMedication} />
     </>
   );
 }

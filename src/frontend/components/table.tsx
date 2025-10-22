@@ -39,7 +39,6 @@ export const Table = (props: Props) => {
           <TableHead>Remaining Supply</TableHead>
           <TableHead>Next Refill</TableHead>
           <TableHead>Refill Alert</TableHead>
-          <TableHead>Remaining</TableHead>
           <TableHead>Adherence</TableHead>
         </TableRow>
       </TableHeader>
@@ -58,18 +57,19 @@ export const Table = (props: Props) => {
               <TableCell className="font-medium">
                 {item.medicationName}
               </TableCell>
-              <TableCell>{item.remainingSupply} tablets left</TableCell>
+              <TableCell className="flex flex-col">
+                <Progress
+                  value={(item.remainingSupply / item.quantityReceived) * 100}
+                />
+                <span className="text-muted-foreground text-sm">
+                  {item.remainingSupply}/{item.quantityReceived}
+                </span>
+              </TableCell>
               <TableCell>
                 {dayjs(item.nextRefill).format("DD MMM YYYY")}
               </TableCell>
               <TableCell>
                 <StatusBadge status={item.refillStatus} />
-              </TableCell>
-              <TableCell>
-                <Progress
-                  value={(item.remainingSupply / item.quantityReceived) * 100}
-                />
-                {item.remainingSupply}/{item.quantityReceived}
               </TableCell>
               <TableCell className="text-center">{item.adherence}%</TableCell>
               <TableCell className="text-right">
