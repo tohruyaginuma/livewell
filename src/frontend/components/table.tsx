@@ -10,43 +10,21 @@ import {
 } from "@/frontend/components/ui/table";
 import { Progress } from "@/frontend/components/ui/progress";
 import { IconEye } from "@tabler/icons-react";
-import { Badge } from "@/frontend/components/ui/badge";
-import { MEDICATION_STATUS_LABEL } from "@/shared/constants";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import type { UserMedicationResponse } from "@/server/service/user-medication-response";
+import { Spinner } from "./ui/spinner";
+import { StatusBadge } from "./status-badge";
+import dayjs from "dayjs";
 
-export const Table = () => {
+type Props = {
+  items: UserMedicationResponse[];
+  isLoading: boolean;
+};
+
+export const Table = (props: Props) => {
+  const { items, isLoading } = props;
   const router = useRouter();
-  const items = [
-    {
-      id: 1,
-      name: "Medication 1",
-      dosage: 10,
-      frequency: "Daily",
-      daysSupply: 30,
-    },
-    {
-      id: 2,
-      name: "Medication 2",
-      dosage: 10,
-      frequency: "Daily",
-      daysSupply: 30,
-    },
-    {
-      id: 3,
-      name: "Medication 3",
-      dosage: 10,
-      frequency: "Daily",
-      daysSupply: 30,
-    },
-    {
-      id: 4,
-      name: "Medication 4",
-      dosage: 10,
-      frequency: "Daily",
-      daysSupply: 30,
-    },
-  ];
 
   const handleView = (id: number) => {
     console.log(`Viewing medication ${id}`);
@@ -66,49 +44,55 @@ export const Table = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((item) => (
-          <TableRow key={item.id}>
-            <TableCell className="font-medium">{item.name}</TableCell>
-            <TableCell>100</TableCell>
-            <TableCell>2025-01-01</TableCell>
-            <TableCell>
-              <Badge
-                className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
-                variant="destructive"
-              >
-                {MEDICATION_STATUS_LABEL[0]}
-              </Badge>
-              <Badge
-                className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
-                variant="default"
-              >
-                {MEDICATION_STATUS_LABEL[1]}
-              </Badge>
-              <Badge
-                className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
-                variant="secondary"
-              >
-                {MEDICATION_STATUS_LABEL[2]}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <Progress value={60} /> 60/100
-            </TableCell>
-            <TableCell className="text-center">60%</TableCell>
-            <TableCell className="text-right">
-              <Button
-                asChild
-                variant="outline"
-                onClick={() => handleView(items[0].id)}
-              >
-                <div className="flex items-center gap-2">
-                  <IconEye />
-                  View
-                </div>
-              </Button>
+        {isLoading ? (
+          <TableRow>
+            <TableCell colSpan={7} className="text-center">
+              <div className="flex justify-center items-center w-full">
+                <Spinner />
+              </div>
             </TableCell>
           </TableRow>
-        ))}
+        ) : items && items.length > 0 ? (
+          items.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell className="font-medium">
+                {item.medicationName}
+              </TableCell>
+              <TableCell>{item.remainingSupply} tablets left</TableCell>
+              <TableCell>
+                {dayjs(item.nextRefill).format("DD MMM YYYY")}
+              </TableCell>
+              <TableCell>
+                <StatusBadge status={item.refillStatus} />
+              </TableCell>
+              <TableCell>
+                <Progress
+                  value={(item.remainingSupply / item.quantityReceived) * 100}
+                />
+                {item.remainingSupply}/{item.quantityReceived}
+              </TableCell>
+              <TableCell className="text-center">{item.adherence}%</TableCell>
+              <TableCell className="text-right">
+                <Button
+                  asChild
+                  variant="outline"
+                  onClick={() => handleView(item.medicationId)}
+                >
+                  <div className="flex items-center gap-2">
+                    <IconEye />
+                    View
+                  </div>
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={7} className="text-center">
+              No medications found
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </TableComponent>
   );
