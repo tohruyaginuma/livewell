@@ -6,7 +6,7 @@ import {
   userMedicationStatuses,
   userMedications,
   users,
-} from "@/server/infra/data";
+} from "@/infra/data";
 import { UserRepository } from "@/server/repository/user";
 import { UserService } from "@/server/service/user";
 import { UserMedicationRepository } from "@/server/repository/user-medication";
