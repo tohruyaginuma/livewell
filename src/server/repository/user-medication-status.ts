@@ -1,29 +1,49 @@
-import { UserId } from "../domain/user";
-import { UserMedicationStatus } from "../domain/user-medication-status";
-import type { IUserMedicationStatusRepository } from "../domain/user-medication-status-repository";
+import type {
+  UserMedicationStatus,
+  UserMedicationStatusId,
+} from "@/server/domain/user-medication-status";
+import type { IUserMedicationStatusRepository } from "@/server/domain/user-medication-status-repository";
 
 export class UserMedicationStatusRepository
   implements IUserMedicationStatusRepository
 {
-  readonly #userMedicationStatus: ReadonlyArray<UserMedicationStatus>;
+  readonly #byId: Map<UserMedicationStatusId, UserMedicationStatus>;
 
-  constructor(userMedicationStatus: ReadonlyArray<UserMedicationStatus>) {
-    this.#userMedicationStatus = userMedicationStatus;
+  constructor(userMedicationStatus: ReadonlyArray<UserMedicationStatus> = []) {
+    const copy = [...userMedicationStatus];
+    this.#byId = new Map(copy.map((s) => [s.id, s]));
   }
 
-  async findAllByUserId(userId: UserId): Promise<UserMedicationStatus[]> {
-    const userMedicationStatus = this.#userMedicationStatus
-      .filter((userMedicationStatus) => userMedicationStatus.userId === userId)
-      .map(
-        (userMedicationStatus) =>
-          new UserMedicationStatus(
-            userMedicationStatus.id,
-            userMedicationStatus.userId,
-            userMedicationStatus.userMedicationId,
-            userMedicationStatus.takenDate,
-          ),
-      );
+  async findById(
+    id: UserMedicationStatusId,
+  ): Promise<UserMedicationStatus | undefined> {
+    return this.#byId.get(id);
+  }
 
+  async findAllByIds(
+    ids: UserMedicationStatusId[],
+  ): Promise<UserMedicationStatus[]> {
+    const out: UserMedicationStatus[] = [];
+    for (const id of ids) {
+      const s = this.#byId.get(id);
+      if (s) out.push(s);
+    }
+    return out;
+  }
+
+  async create(
+    userMedicationStatus: UserMedicationStatus,
+  ): Promise<UserMedicationStatus> {
+    if (this.#byId.has(userMedicationStatus.id)) {
+      throw new Error(
+        `UserMedicationStatus with id ${userMedicationStatus.id} already exists`,
+      );
+    }
+    this.#byId.set(userMedicationStatus.id, userMedicationStatus);
     return userMedicationStatus;
+  }
+
+  async delete(id: UserMedicationStatusId): Promise<void> {
+    this.#byId.delete(id);
   }
 }
