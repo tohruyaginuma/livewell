@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+type Params = { id: string; medicationId: string };
 
 export async function GET(
-  _req: Request,
-  { params }: { params: { id: string; medicationId: string } },
+  _req: NextRequest,
+  context: { params: Promise<Params> },
 ) {
-  const { id, medicationId } = await params;
-  const userId = parseInt(id, 10);
-  const medicationIdInt = parseInt(medicationId, 10);
+  const { id, medicationId } = await context.params;
+
+  const userId = Number.parseInt(id, 10);
+  const medicationIdInt = Number.parseInt(medicationId, 10);
 
   if (Number.isNaN(userId) || Number.isNaN(medicationIdInt)) {
     return NextResponse.json(
@@ -15,8 +18,8 @@ export async function GET(
     );
   }
 
-  console.log("get request user id is ", userId);
-  console.log("get request medication id is ", medicationIdInt);
+  console.log("get request user id is", userId);
+  console.log("get request medication id is", medicationIdInt);
 
   return NextResponse.json(
     { message: "User medication retrieved" },
@@ -25,12 +28,14 @@ export async function GET(
 }
 
 export async function PUT(
-  _req: Request,
-  { params }: { params: { id: string; medicationId: string } },
+  req: NextRequest,
+  context: { params: Promise<Params> },
 ) {
-  const { id, medicationId } = await params;
-  const userId = parseInt(id, 10);
-  const medicationIdInt = parseInt(medicationId, 10);
+  const { id, medicationId } = await context.params;
+
+  const userId = Number.parseInt(id, 10);
+  const medicationIdInt = Number.parseInt(medicationId, 10);
+
   if (Number.isNaN(userId) || Number.isNaN(medicationIdInt)) {
     return NextResponse.json(
       { message: "Invalid user ID or medication ID" },
@@ -38,8 +43,8 @@ export async function PUT(
     );
   }
 
-  console.log("put request user id is ", userId);
-  console.log("put request medication id is ", medicationIdInt);
+  console.log("put request user id is", userId);
+  console.log("put request medication id is", medicationIdInt);
 
   return NextResponse.json(
     { message: "User medication updated" },

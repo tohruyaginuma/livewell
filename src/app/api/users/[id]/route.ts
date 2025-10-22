@@ -1,14 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { container } from "@/server/lib/container";
 import { NotFoundError } from "@/shared/errors";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } },
-) {
-  const { id } = await params;
-  const userId = parseInt(id, 10);
+type Params = { id: string };
 
+export async function GET(
+  _req: NextRequest,
+  context: { params: Promise<Params> },
+) {
+  const { id } = await context.params;
+
+  const userId = Number.parseInt(id, 10);
   if (Number.isNaN(userId)) {
     return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
   }
