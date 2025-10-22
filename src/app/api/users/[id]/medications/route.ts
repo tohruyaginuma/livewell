@@ -1,5 +1,6 @@
 import { container } from "@/server/lib/container";
 import { NextResponse } from "next/server";
+import { UserMedicationCreateSchema } from "./schemas";
 
 export async function GET(
   _req: Request,
@@ -26,22 +27,29 @@ export async function GET(
 }
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: { id: string } },
 ) {
   const { id } = await params;
   const userId = parseInt(id, 10);
-
   if (Number.isNaN(userId)) {
     return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
   }
 
-  console.log("post request user id is ", userId);
+  const body = await req.json();
+  const parsed = UserMedicationCreateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { message: "Invalid request body", errors: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
 
-  return NextResponse.json(
-    { message: "User medication created" },
-    { status: 200 },
-  );
+  // 実際の保存処理…
+  const data = parsed.data;
+  console.log("Received medication:", data);
+
+  return NextResponse.json({ result: "OK", data }, { status: 201 });
 }
 
 export async function DELETE(
