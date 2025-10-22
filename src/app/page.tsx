@@ -27,12 +27,12 @@ export default function Home() {
       try {
         setIsLoading(true);
         const userId = 1;
-        const user = await fetch(`${API_URL}/users/${userId}`);
+        const user = await fetch(`${API_URL}/api/users/${userId}/`);
         const userData = await user.json();
         setMe(userData.id, userData.name);
 
         const userMedications = await fetch(
-          `${API_URL}/users/${userId}/medications`,
+          `${API_URL}/api/users/${userId}/medications`,
         );
         const userMedicationsData = await userMedications.json();
         setUserMedications(userMedicationsData);
