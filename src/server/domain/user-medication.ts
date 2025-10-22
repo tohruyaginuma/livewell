@@ -1,7 +1,9 @@
-import type { MedicationId } from "@/server/domain/medication";
-import type { UserId } from "@/server/domain/user";
-
 export type UserMedicationId = number;
+export type UserId = number;
+export type MedicationId = number;
+export type Frequency = number; // doses/day
+export type DaysSupply = number; // days received
+export type YmdDate = string; // "YYYY-MM-DD"
 
 export class UserMedication {
   readonly #id: UserMedicationId;
@@ -9,7 +11,9 @@ export class UserMedication {
   readonly #medicationId: MedicationId;
   readonly #quantityReceived: number;
   readonly #dosage: number;
-  readonly #startDate: Date;
+  readonly #frequency: Frequency;
+  readonly #daysSupply: DaysSupply;
+  readonly #startDate: YmdDate;
 
   constructor(
     id: UserMedicationId,
@@ -17,37 +21,42 @@ export class UserMedication {
     medicationId: MedicationId,
     quantityReceived: number,
     dosage: number,
-    startDate: Date,
+    frequency: Frequency,
+    daysSupply: DaysSupply,
+    startDate: YmdDate, // "YYYY-MM-DD"
   ) {
     this.#id = id;
     this.#userId = userId;
     this.#medicationId = medicationId;
     this.#quantityReceived = quantityReceived;
     this.#dosage = dosage;
+    this.#frequency = frequency;
+    this.#daysSupply = daysSupply;
     this.#startDate = startDate;
   }
 
-  get id(): UserMedicationId {
+  get id() {
     return this.#id;
   }
-
-  get userId(): UserId {
+  get userId() {
     return this.#userId;
   }
-
-  get medicationId(): MedicationId {
+  get medicationId() {
     return this.#medicationId;
   }
-
-  get quantityReceived(): number {
+  get quantityReceived() {
     return this.#quantityReceived;
   }
-
-  get startDate(): Date {
-    return this.#startDate;
-  }
-
-  get dosage(): number {
+  get dosage() {
     return this.#dosage;
+  }
+  get frequency() {
+    return this.#frequency;
+  }
+  get daysSupply() {
+    return this.#daysSupply;
+  }
+  get startDate() {
+    return this.#startDate;
   }
 }

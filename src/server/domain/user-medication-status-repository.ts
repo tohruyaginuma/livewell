@@ -1,6 +1,15 @@
-import type { UserId } from "@/server/domain/user";
-import type { UserMedicationStatus } from "@/server/domain/user-medication-status";
+import type {
+  UserMedicationStatus,
+  UserMedicationStatusId,
+} from "@/server/domain/user-medication-status";
 
 export interface IUserMedicationStatusRepository {
-  findAllByUserId(userId: UserId): Promise<UserMedicationStatus[]>;
+  findById(
+    id: UserMedicationStatusId,
+  ): Promise<UserMedicationStatus | undefined>;
+  findAllByIds(ids: UserMedicationStatusId[]): Promise<UserMedicationStatus[]>;
+  create(
+    userMedicationStatus: UserMedicationStatus,
+  ): Promise<UserMedicationStatus>;
+  delete(id: UserMedicationStatusId): Promise<void>;
 }
