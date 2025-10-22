@@ -8,23 +8,23 @@ export class UserMedication {
   readonly #userId: UserId;
   readonly #medicationId: MedicationId;
   readonly #quantityReceived: number;
-  readonly #startDate: string;
-  readonly #daysSupply: number;
+  readonly #dosage: number;
+  readonly #startDate: Date;
 
   constructor(
     id: UserMedicationId,
     userId: UserId,
     medicationId: MedicationId,
     quantityReceived: number,
-    startDate: string,
-    daysSupply: number,
+    dosage: number,
+    startDate: Date,
   ) {
     this.#id = id;
     this.#userId = userId;
     this.#medicationId = medicationId;
     this.#quantityReceived = quantityReceived;
+    this.#dosage = dosage;
     this.#startDate = startDate;
-    this.#daysSupply = daysSupply;
   }
 
   get id(): UserMedicationId {
@@ -43,11 +43,11 @@ export class UserMedication {
     return this.#quantityReceived;
   }
 
-  get startDate(): string {
+  get startDate(): Date {
     return this.#startDate;
   }
 
-  get daysSupply(): number {
-    return this.#daysSupply;
+  get dosage(): number {
+    return this.#dosage;
   }
 }

@@ -9,7 +9,6 @@ export class UserRepository implements IUserRepository {
   }
 
   async findById(id: UserId): Promise<User | undefined> {
-    console.log("user repository", this.#users);
     return this.#users.find((user) => user.id === id);
   }
 }

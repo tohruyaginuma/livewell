@@ -7,20 +7,17 @@ export class UserMedicationStatus {
   readonly #id: UserMedicationStatusId;
   readonly #userId: UserId;
   readonly #userMedicationId: UserMedicationId;
-  readonly #taken: boolean;
-  readonly #takenDate: string;
+  readonly #takenDate: Date;
 
   constructor(
     id: UserMedicationStatusId,
     userId: UserId,
     userMedicationId: UserMedicationId,
-    taken: boolean,
-    takenDate: string,
+    takenDate: Date,
   ) {
     this.#id = id;
     this.#userId = userId;
     this.#userMedicationId = userMedicationId;
-    this.#taken = taken;
     this.#takenDate = takenDate;
   }
 
@@ -36,11 +33,7 @@ export class UserMedicationStatus {
     return this.#userMedicationId;
   }
 
-  get taken(): boolean {
-    return this.#taken;
-  }
-
-  get takenDate(): string {
+  get takenDate(): Date {
     return this.#takenDate;
   }
 }

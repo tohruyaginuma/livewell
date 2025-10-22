@@ -10,7 +10,7 @@ export class UserMedicationRepository implements IUserMedicationRepository {
   }
 
   async findAllByUserId(userId: UserId): Promise<UserMedication[]> {
-    return this.#userMedications
+    const userMedications = this.#userMedications
       .filter((userMedication) => userMedication.userId === userId)
       .map(
         (userMedication) =>
@@ -19,9 +19,11 @@ export class UserMedicationRepository implements IUserMedicationRepository {
             userMedication.userId,
             userMedication.medicationId,
             userMedication.quantityReceived,
+            userMedication.dosage,
             userMedication.startDate,
-            userMedication.daysSupply,
           ),
       );
+
+    return userMedications;
   }
 }
