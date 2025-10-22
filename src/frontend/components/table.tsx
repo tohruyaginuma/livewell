@@ -16,6 +16,8 @@ import type { UserMedicationResponse } from "@/server/service/user-medication-re
 import { Spinner } from "./ui/spinner";
 import { StatusBadge } from "./status-badge";
 import dayjs from "dayjs";
+import { Sheet } from "@/frontend/components/sheet";
+import { useSheetMedicationStore } from "../stores/use-sheet-medication-store";
 
 type Props = {
   items: UserMedicationResponse[];
@@ -24,12 +26,7 @@ type Props = {
 
 export const Table = (props: Props) => {
   const { items, isLoading } = props;
-  const router = useRouter();
-
-  const handleView = (id: number) => {
-    console.log(`Viewing medication ${id}`);
-    router.push(`/medications/${id}`);
-  };
+  const { onOpen } = useSheetMedicationStore();
 
   return (
     <TableComponent>
@@ -73,11 +70,7 @@ export const Table = (props: Props) => {
               </TableCell>
               <TableCell className="text-center">{item.adherence}%</TableCell>
               <TableCell className="text-right">
-                <Button
-                  asChild
-                  variant="outline"
-                  onClick={() => handleView(item.medicationId)}
-                >
+                <Button asChild variant="outline" onClick={() => onOpen(item)}>
                   <div className="flex items-center gap-2">
                     <IconEye />
                     View

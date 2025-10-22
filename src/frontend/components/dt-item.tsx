@@ -12,7 +12,7 @@ export const DtItem = (props: Props) => {
       <dt className="scroll-m-20 text-xl font-semibold tracking-tight">
         {label}
       </dt>
-      <Separator />
+
       <dd>{value}</dd>
     </div>
   );

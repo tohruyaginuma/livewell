@@ -4,15 +4,16 @@ import { Table } from "@/frontend/components/table";
 import { useMeStore } from "@/frontend/stores/use-me-store";
 import { useCallback, useEffect, useState } from "react";
 import { DrawerMedicationCreate } from "@/frontend/components/drawer-medication-create";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-} from "@/frontend/components/ui/breadcrumb";
 import { Button } from "@/frontend/components/ui/button";
 import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
 import { UserMedicationResponse } from "@/server/service/user-medication-response";
 import { API_URL } from "@/shared/constants";
+import { SheetMedication } from "@/frontend/components/sheet-mecation";
+import { DeleteMedicationAlertDialog } from "@/frontend/components/delete-medication-alert-dialog";
+import { DrawerMedicationEdit } from "@/frontend/components/drawer-medication-edit";
+import { toast } from "sonner";
+import { useDeleteMedicationAlertStore } from "@/frontend/stores/use-delete-medication-alert-store";
+import { useEditMedicationDrawerStore } from "@/frontend/stores/use-edit-medication-drawer-store";
 
 export default function Home() {
   const { setMe } = useMeStore();
@@ -21,6 +22,19 @@ export default function Home() {
   const [userMedications, setUserMedications] = useState<
     UserMedicationResponse[]
   >([]);
+  const { setIsOpen: setIsOpenDeleteMedicationAlert } =
+    useDeleteMedicationAlertStore();
+  const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
+
+  const onClickDeleteMedication = async () => {
+    toast.success("Medication deleted successfully");
+    setIsOpenDeleteMedicationAlert(false);
+  };
+
+  const onClickEditMedication = async () => {
+    toast.success("Medication updated successfully");
+    setIsOpenEditMedication(false);
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -48,12 +62,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>Medications</BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <div className="flex justify-end items-center">
         <Button
           variant="outline"
           size="sm"
@@ -70,6 +79,9 @@ export default function Home() {
           setIsOpen(false);
         }}
       />
+      <SheetMedication />
+      <DeleteMedicationAlertDialog callback={onClickDeleteMedication} />
+      <DrawerMedicationEdit callback={onClickEditMedication} />
     </>
   );
 }

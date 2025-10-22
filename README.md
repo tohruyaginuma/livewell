@@ -37,7 +37,6 @@ pnpm dev
 | Page              | Path                            | Description                |
 |-------------------|---------------------------------|----------------------------|
 | Medication List   | `/`                             | View all medications       |
-| Medication Detail | `/medications/:medicationId`    | Detailed view of medication|
 
 ---
 
@@ -108,30 +107,6 @@ _No body required_
     "quantityReceived": number,
     "daysSupply": number,
     "startDate": string
-}
-```
-
----
-
-### GET `/users/:userId/medications/:userMedicationId`
-
-**Request:**  
-_No body required_
-
-**Response:**
-```json
-{
-    "id": number,
-    "name": string,
-    "dosage": number,
-    "frequency": number,
-    "quantityReceived": number,
-    "daysSupply": number,
-    "startDate": string,
-    "remaining": number,
-    "nextRefill": string,
-    "refillStatus": number,
-    "adherence": number
 }
 ```
 
