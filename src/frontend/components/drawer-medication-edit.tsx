@@ -9,16 +9,16 @@ type props = {
 export const DrawerMedicationEdit = (props: props) => {
   const { callback } = props;
 
-  const { isOpen, setIsOpen } = useEditMedicationDrawerStore();
+  const { isOpen, item, onClose } = useEditMedicationDrawerStore();
 
   return (
     <Drawer
       isOpen={isOpen}
-      setIsOpen={setIsOpen}
+      onClose={onClose}
       title="Edit Medication"
       description="Edit a medication"
     >
-      <FormMedication callback={callback} />
+      <FormMedication callback={callback} item={item} />
     </Drawer>
   );
 };

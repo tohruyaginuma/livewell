@@ -17,41 +17,45 @@ import { Input } from "@/frontend/components/ui/input";
 import { toast } from "sonner";
 import { API_URL } from "@/shared/constants";
 import { useMeStore } from "../stores/use-me-store";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   dosage: z.number().int().positive(),
   frequency: z.number().int().positive(),
-  startDate: z.string().date(),
+  startDate: z.string().min(1, { message: "Start date is required" }),
   quantityReceived: z.number().int().positive(),
   daysSupply: z.number().int().positive(),
 });
 
+type FormData = z.infer<typeof formSchema>;
+
 type props = {
   callback: () => void;
+  item?: UserMedicationListItemResponse | null;
 };
 
 export const FormMedication = (props: props) => {
-  const { callback } = props;
+  const { callback, item } = props;
   const { id: userId } = useMeStore();
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      dosage: 0,
-      frequency: 0,
-      startDate: "",
-      quantityReceived: 0,
-      daysSupply: 0,
+      name: item?.medicationName || "",
+      dosage: item?.dosage || 0,
+      frequency: item?.frequency || 0,
+      startDate: item?.startDate
+        ? new Date(item.startDate).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
+      quantityReceived: item?.quantityReceived || 0,
+      daysSupply: item?.daysSupply || 0,
     },
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     if (!userId) {
@@ -60,29 +64,49 @@ export const FormMedication = (props: props) => {
     }
 
     try {
+      // Convert date string to ISO string for API
+      const submitData = {
+        ...values,
+        startDate: new Date(values.startDate).toISOString(),
+      };
+
       const response = await fetch(
-        `${API_URL}/api/users/${userId}/user-medications`,
+        item
+          ? `${API_URL}/api/users/${userId}/user-medications/${item.id}`
+          : `${API_URL}/api/users/${userId}/user-medications`,
         {
-          method: "POST",
-          body: JSON.stringify(values),
+          method: item ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(submitData),
         },
       );
       if (!response.ok) {
-        toast.error("Failed to create medication");
+        toast.error(
+          item ? "Failed to update medication" : "Failed to create medication",
+        );
         return;
       }
       const data = await response.json();
       console.log(data);
       callback();
-      toast.success("Medication created successfully");
+      toast.success(
+        item
+          ? "Medication updated successfully"
+          : "Medication created successfully",
+      );
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create medication");
+      toast.error(
+        item ? "Failed to update medication" : "Failed to create medication",
+      );
     }
   }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 px-4">
         <FormField
           control={form.control}
           name="name"
@@ -108,7 +132,7 @@ export const FormMedication = (props: props) => {
                     type="number"
                     placeholder="Dosage"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -126,7 +150,7 @@ export const FormMedication = (props: props) => {
                     type="number"
                     placeholder="Frequency"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -135,7 +159,6 @@ export const FormMedication = (props: props) => {
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {" "}
           <FormField
             control={form.control}
             name="quantityReceived"
@@ -147,7 +170,7 @@ export const FormMedication = (props: props) => {
                     type="number"
                     placeholder="Quantity Received"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -165,7 +188,7 @@ export const FormMedication = (props: props) => {
                     type="number"
                     placeholder="Days Supply"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -181,13 +204,7 @@ export const FormMedication = (props: props) => {
             <FormItem>
               <FormLabel>Start Date</FormLabel>
               <FormControl>
-                <Input
-                  type="date"
-                  placeholder="Start Date"
-                  {...field}
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.target.value)}
-                />
+                <Input type="date" placeholder="Start Date" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

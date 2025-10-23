@@ -22,7 +22,7 @@ export const SheetMedication = () => {
   const [selectedDay, setSelectedDay] = useState<Date>(today.toDate());
   const { onOpen: onOpenDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
-  const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
+  const { onOpen: onOpenEditMedication } = useEditMedicationDrawerStore();
 
   const onClickTakenDose = async () => {
     toast.success("Taken dose successfully");
@@ -71,7 +71,7 @@ export const SheetMedication = () => {
               variant="outline"
               size="sm"
               onClick={() => {
-                setIsOpenEditMedication(true);
+                onOpenEditMedication(item);
               }}
             >
               <IconPencil />

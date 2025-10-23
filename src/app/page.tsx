@@ -18,7 +18,10 @@ import { useSheetMedicationStore } from "@/frontend/stores/use-sheet-medication-
 
 export default function Home() {
   const { setMe } = useMeStore();
-  const { setIsOpen } = useCreateMedicationDrawerStore();
+  const {
+    onOpen: onOpenCreateMedicationDrawer,
+    onClose: onCloseCreateMedicationDrawer,
+  } = useCreateMedicationDrawerStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userMedications, setUserMedications] = useState<
     UserMedicationListItemResponse[]
@@ -27,7 +30,7 @@ export default function Home() {
   const { onClose: onCloseDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
   const { onClose: onCloseSheetMedication } = useSheetMedicationStore();
-  const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
+  const { onClose: onCloseEditMedication } = useEditMedicationDrawerStore();
 
   const fetchData = useCallback(async () => {
     try {
@@ -58,7 +61,9 @@ export default function Home() {
   };
 
   const onClickEditMedication = async () => {
-    setIsOpenEditMedication(false);
+    await fetchData();
+    onCloseSheetMedication();
+    onCloseEditMedication();
 
     toast.success("Medication updated successfully");
   };
@@ -74,7 +79,7 @@ export default function Home() {
           variant="outline"
           size="sm"
           className="hidden sm:flex"
-          onClick={() => setIsOpen(true)}
+          onClick={onOpenCreateMedicationDrawer}
         >
           Add Medication
         </Button>
@@ -83,7 +88,7 @@ export default function Home() {
       <DrawerMedicationCreate
         callback={async () => {
           await fetchData();
-          setIsOpen(false);
+          onCloseCreateMedicationDrawer();
         }}
       />
       <SheetMedication />

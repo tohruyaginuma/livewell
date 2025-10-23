@@ -2,11 +2,13 @@ import { create } from "zustand";
 
 type CreateMedicationDrawerStore = {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  onOpen: () => void;
+  onClose: () => void;
 };
 
 export const useCreateMedicationDrawerStore =
   create<CreateMedicationDrawerStore>((set) => ({
     isOpen: false,
-    setIsOpen: (isOpen: boolean) => set({ isOpen }),
+    onOpen: () => set({ isOpen: true }),
+    onClose: () => set({ isOpen: false }),
   }));

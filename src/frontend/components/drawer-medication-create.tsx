@@ -9,12 +9,12 @@ type props = {
 export const DrawerMedicationCreate = (props: props) => {
   const { callback } = props;
 
-  const { isOpen, setIsOpen } = useCreateMedicationDrawerStore();
+  const { isOpen, onClose } = useCreateMedicationDrawerStore();
 
   return (
     <Drawer
       isOpen={isOpen}
-      setIsOpen={setIsOpen}
+      onClose={onClose}
       title="Add a Medication"
       description="Add a new medication to your list"
     >

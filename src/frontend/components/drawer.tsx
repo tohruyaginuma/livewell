@@ -22,20 +22,20 @@ import { PropsWithChildren } from "react";
 
 type DrawerProps = PropsWithChildren<{
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  onClose: () => void;
   title: string;
   description: string;
 }>;
 
 export function Drawer(props: DrawerProps) {
-  const { isOpen, setIsOpen, title, description, children } = props;
+  const { isOpen, onClose, title, description, children } = props;
 
   const isMobile = useIsMobile();
 
   if (!isMobile) {
     return (
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-none sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
@@ -47,7 +47,7 @@ export function Drawer(props: DrawerProps) {
   }
 
   return (
-    <DrawerComponent open={isOpen} onOpenChange={setIsOpen}>
+    <DrawerComponent open={isOpen} onOpenChange={onClose}>
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>
