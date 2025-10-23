@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/shared/constants";
 
 export const users = [{ id: 1, name: "John Doe 1" }];
 
@@ -17,7 +18,7 @@ export const userMedications = [
     dosage: 2,
     frequency: 2,
     daysSupply: 30,
-    startDate: dayjs().subtract(10, "day").format("YYYY-MM-DD"),
+    startDate: dayjs().subtract(10, "day").format(DATE_FORMAT),
   },
   {
     id: 2,
@@ -27,7 +28,7 @@ export const userMedications = [
     dosage: 1,
     frequency: 1,
     daysSupply: 60,
-    startDate: dayjs().subtract(5, "day").format("YYYY-MM-DD"),
+    startDate: dayjs().subtract(5, "day").format(DATE_FORMAT),
   },
   {
     id: 3,
@@ -37,7 +38,7 @@ export const userMedications = [
     dosage: 3,
     frequency: 3,
     daysSupply: 30,
-    startDate: dayjs().subtract(20, "day").format("YYYY-MM-DD"),
+    startDate: dayjs().subtract(20, "day").format(DATE_FORMAT),
   },
 ];
 
@@ -45,26 +46,26 @@ export const userMedicationStatuses = [
   {
     id: 1,
     userMedicationId: userMedications[0].id,
-    takenDate: dayjs().subtract(10, "day").format("YYYY-MM-DD"),
+    takenDate: dayjs().subtract(10, "day").format(DATE_FORMAT),
   },
   {
     id: 2,
     userMedicationId: userMedications[0].id,
-    takenDate: dayjs().subtract(9, "day").format("YYYY-MM-DD"),
+    takenDate: dayjs().subtract(9, "day").format(DATE_FORMAT),
   },
   {
     id: 3,
     userMedicationId: userMedications[0].id,
-    takenDate: dayjs().subtract(8, "day").format("YYYY-MM-DD"),
+    takenDate: dayjs().subtract(8, "day").format(DATE_FORMAT),
   },
   {
     id: 4,
     userMedicationId: userMedications[1].id,
-    takenDate: dayjs().subtract(5, "day").format("YYYY-MM-DD"),
+    takenDate: dayjs().subtract(5, "day").format(DATE_FORMAT),
   },
   {
     id: 5,
     userMedicationId: userMedications[1].id,
-    takenDate: dayjs().subtract(4, "day").format("YYYY-MM-DD"),
+    takenDate: dayjs().subtract(4, "day").format(DATE_FORMAT),
   },
 ];

@@ -1,4 +1,4 @@
-import { MEDICATION_STATUS } from "@/shared/constants";
+import type { MEDICATION_STATUS } from "@/shared/constants";
 
 export type RefillStatus =
   | typeof MEDICATION_STATUS.OVERDUE
@@ -14,6 +14,11 @@ export class UserMedicationResponse {
   readonly refillStatus: RefillStatus;
   readonly adherence: number;
   readonly quantityReceived: number;
+  readonly dosage: number;
+  readonly frequency: number;
+  readonly startDate: string;
+  readonly daysSupply: number;
+  readonly takenDates: string[];
 
   constructor({
     id,
@@ -24,6 +29,11 @@ export class UserMedicationResponse {
     refillStatus,
     adherence,
     quantityReceived,
+    dosage,
+    frequency,
+    startDate,
+    daysSupply,
+    takenDates,
   }: {
     id: number;
     medicationId: number;
@@ -33,6 +43,11 @@ export class UserMedicationResponse {
     refillStatus: RefillStatus;
     adherence: number;
     quantityReceived: number;
+    dosage: number;
+    frequency: number;
+    startDate: string;
+    daysSupply: number;
+    takenDates: string[];
   }) {
     this.id = id;
     this.medicationId = medicationId;
@@ -42,18 +57,10 @@ export class UserMedicationResponse {
     this.refillStatus = refillStatus;
     this.adherence = Math.min(100, Math.max(0, Math.round(adherence)));
     this.quantityReceived = quantityReceived;
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      medicationId: this.medicationId,
-      medicationName: this.medicationName,
-      remainingSupply: this.remainingSupply,
-      nextRefill: this.nextRefill,
-      refillStatus: this.refillStatus,
-      adherence: this.adherence,
-      quantityReceived: this.quantityReceived,
-    };
+    this.dosage = dosage;
+    this.frequency = frequency;
+    this.startDate = startDate;
+    this.daysSupply = daysSupply;
+    this.takenDates = takenDates;
   }
 }

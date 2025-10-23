@@ -1,16 +1,17 @@
 import type { UserMedicationId } from "@/server/domain/user-medication";
 
 export type UserMedicationStatusId = number;
+export type TakenDate = string;
 
 export class UserMedicationStatus {
   readonly #id: UserMedicationStatusId;
   readonly #userMedicationId: UserMedicationId;
-  readonly #takenDate: string;
+  readonly #takenDate: TakenDate;
 
   constructor(
     id: UserMedicationStatusId,
     userMedicationId: UserMedicationId,
-    takenDate: string, //
+    takenDate: TakenDate,
   ) {
     this.#id = id;
     this.#userMedicationId = userMedicationId;

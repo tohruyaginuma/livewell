@@ -8,7 +8,7 @@ import { Button } from "@/frontend/components/ui/button";
 import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
 import { UserMedicationResponse } from "@/server/service/user-medication-response";
 import { API_URL } from "@/shared/constants";
-import { SheetMedication } from "@/frontend/components/sheet-mecation";
+import { SheetMedication } from "@/frontend/components/sheet-medication";
 import { DeleteMedicationAlertDialog } from "@/frontend/components/delete-medication-alert-dialog";
 import { DrawerMedicationEdit } from "@/frontend/components/drawer-medication-edit";
 import { toast } from "sonner";

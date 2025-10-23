@@ -1,9 +1,9 @@
 export type UserMedicationId = number;
 export type UserId = number;
 export type MedicationId = number;
-export type Frequency = number; // doses/day
-export type DaysSupply = number; // days received
-export type YmdDate = string; // "YYYY-MM-DD"
+export type Frequency = number;
+export type DaysSupply = number;
+export type YmdDate = string;
 
 export class UserMedication {
   readonly #id: UserMedicationId;
@@ -23,7 +23,7 @@ export class UserMedication {
     dosage: number,
     frequency: Frequency,
     daysSupply: DaysSupply,
-    startDate: YmdDate, // "YYYY-MM-DD"
+    startDate: YmdDate,
   ) {
     this.#id = id;
     this.#userId = userId;

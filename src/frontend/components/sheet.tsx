@@ -20,7 +20,7 @@ export const Sheet = (props: Props) => {
     <SheetComponent open={isOpen} onOpenChange={onClose}>
       <SheetContent
         side="right"
-        className="overflow-y-auto px-4 pb-4 sm:max-w-none sm:w-2/5"
+        className="overflow-y-auto px-4 pb-4 sm:max-w-none sm:w-3/7"
       >
         <SheetTitle className="sticky top-0 bg-white py-4">{header}</SheetTitle>
 

@@ -13,3 +13,5 @@ export const MEDICATION_STATUS_LABEL = {
   [MEDICATION_STATUS.ON_TRACK]: "On Track",
   [MEDICATION_STATUS.RUNNING_LOW]: "Running Low",
 };
+
+export const DATE_FORMAT = "DD MMM YYYY";

@@ -14,6 +14,7 @@ import { UserMedicationCreateResponse } from "@/server/service/user-medication-c
 import { MEDICATION_STATUS } from "@/shared/constants";
 
 import dayjs, { Dayjs } from "dayjs";
+import { DATE_FORMAT } from "@/shared/constants";
 
 export class UserMedicationService {
   readonly #userMedicationRepository: IUserMedicationRepository;
@@ -52,12 +53,13 @@ export class UserMedicationService {
       medicationIds.length > 0
         ? await this.#medicationRepository.findByIds(medicationIds)
         : [];
+
     const medicationById = new Map<number, Medication>(
       medications.map((m) => [m.id, m]),
     );
 
     const statuses: UserMedicationStatus[] =
-      await this.#userMedicationStatusRepository.findAllByIds(
+      await this.#userMedicationStatusRepository.findAllByUserMedicationIds(
         userMedications.map((um) => um.id),
       );
 
@@ -72,13 +74,16 @@ export class UserMedicationService {
 
     const result = userMedications.map((um: UserMedication) => {
       const med = medicationById.get(um.medicationId);
-      const start = dayjs(um.startDate, "YYYY-MM-DD");
-      const elapsedDaysRaw = Math.max(0, today.diff(start, "day") + 1);
-      const elapsedDays = Math.min(elapsedDaysRaw, um.daysSupply);
-      const expected = elapsedDays * um.frequency;
 
-      const logs = statusesByUM.get(um.id) ?? [];
+      // Start date
+      const start = dayjs(um.startDate, DATE_FORMAT);
+
+      // Elapsed days
+      const elapsedDays = Math.max(0, today.diff(start, "day") + 1);
+
+      // Taken statuses
       const takenByDay = new Map<string, number>();
+      const logs = statusesByUM.get(um.id) ?? [];
       for (const s of logs) {
         const d = s.takenDate;
         takenByDay.set(d, (takenByDay.get(d) ?? 0) + 1);
@@ -87,25 +92,38 @@ export class UserMedicationService {
         .map((cnt) => Math.min(cnt, um.frequency))
         .reduce((a, b) => a + b, 0);
 
+      const takenDates = Array.from(takenByDay.keys()).sort();
+
+      // Adherence calculation
+      const adherence = (taken / elapsedDays) * 100;
+
+      // Remaining supply calculation
       const dailyUsage = um.dosage * um.frequency;
-      const dosesConsumed = taken * um.dosage;
+      const dosesConsumed = taken * dailyUsage;
       const remainingSupply = Math.max(0, um.quantityReceived - dosesConsumed);
+
+      // Next refill calculation
       const daysLeft =
         dailyUsage === 0 ? 0 : Math.floor(remainingSupply / dailyUsage);
       const nextRefill = today.add(daysLeft, "day");
+
+      // refill status
       const refillStatus = this.getRefillStatus(today, nextRefill);
-      const adherence =
-        expected === 0 ? 100 : Math.round((taken / expected) * 100);
 
       return new UserMedicationResponse({
         id: um.id,
         medicationId: um.medicationId,
         medicationName: med?.name ?? "",
+        dosage: um.dosage,
+        frequency: um.frequency,
+        startDate: um.startDate,
+        daysSupply: um.daysSupply,
         nextRefill: nextRefill.toISOString(),
         remainingSupply,
         quantityReceived: um.quantityReceived,
         refillStatus,
         adherence,
+        takenDates,
       });
     });
 
@@ -161,7 +179,7 @@ export class UserMedicationService {
       medicationName: createdMedication.name,
       quantityReceived: createdUserMedication.quantityReceived,
       dosage: createdUserMedication.dosage,
-      startDate: dayjs(createdUserMedication.startDate, "YYYY-MM-DD").toDate(),
+      startDate: dayjs(createdUserMedication.startDate, DATE_FORMAT).toDate(),
       daysSupply: createdUserMedication.daysSupply,
     });
   }

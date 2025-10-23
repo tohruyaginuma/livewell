@@ -12,10 +12,6 @@ export class UserMedicationRepository implements IUserMedicationRepository {
     this.#byId = new Map(userMedications.map((u) => [u.id, u]));
   }
 
-  async findById(id: UserMedicationId): Promise<UserMedication | undefined> {
-    return this.#byId.get(id);
-  }
-
   async findAllByUserId(userId: UserId): Promise<UserMedication[]> {
     return Array.from(this.#byId.values()).filter((um) => um.userId === userId);
   }

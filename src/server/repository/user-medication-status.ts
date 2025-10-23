@@ -1,3 +1,4 @@
+import type { UserMedicationId } from "@/server/domain/user-medication";
 import type {
   UserMedicationStatus,
   UserMedicationStatusId,
@@ -20,13 +21,15 @@ export class UserMedicationStatusRepository
     return this.#byId.get(id);
   }
 
-  async findAllByIds(
-    ids: UserMedicationStatusId[],
+  async findAllByUserMedicationIds(
+    userMedicationIds: UserMedicationId[],
   ): Promise<UserMedicationStatus[]> {
     const out: UserMedicationStatus[] = [];
-    for (const id of ids) {
-      const s = this.#byId.get(id);
-      if (s) out.push(s);
+    for (const id of userMedicationIds) {
+      const statuses = Array.from(this.#byId.values()).filter(
+        (s) => s.userMedicationId === id,
+      );
+      out.push(...statuses);
     }
     return out;
   }

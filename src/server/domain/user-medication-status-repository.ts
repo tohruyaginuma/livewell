@@ -1,3 +1,4 @@
+import type { UserMedicationId } from "@/server/domain/user-medication";
 import type {
   UserMedicationStatus,
   UserMedicationStatusId,
@@ -7,7 +8,9 @@ export interface IUserMedicationStatusRepository {
   findById(
     id: UserMedicationStatusId,
   ): Promise<UserMedicationStatus | undefined>;
-  findAllByIds(ids: UserMedicationStatusId[]): Promise<UserMedicationStatus[]>;
+  findAllByUserMedicationIds(
+    userMedicationIds: UserMedicationId[],
+  ): Promise<UserMedicationStatus[]>;
   create(
     userMedicationStatus: UserMedicationStatus,
   ): Promise<UserMedicationStatus>;

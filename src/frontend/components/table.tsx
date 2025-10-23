@@ -11,13 +11,12 @@ import {
 import { Progress } from "@/frontend/components/ui/progress";
 import { IconEye } from "@tabler/icons-react";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
 import type { UserMedicationResponse } from "@/server/service/user-medication-response";
 import { Spinner } from "./ui/spinner";
 import { StatusBadge } from "./status-badge";
 import dayjs from "dayjs";
-import { Sheet } from "@/frontend/components/sheet";
 import { useSheetMedicationStore } from "../stores/use-sheet-medication-store";
+import { DATE_FORMAT } from "@/shared/constants";
 
 type Props = {
   items: UserMedicationResponse[];
@@ -63,7 +62,7 @@ export const Table = (props: Props) => {
                 </span>
               </TableCell>
               <TableCell>
-                {dayjs(item.nextRefill).format("DD MMM YYYY")}
+                {dayjs(item.nextRefill).format(DATE_FORMAT)}
               </TableCell>
               <TableCell>
                 <StatusBadge status={item.refillStatus} />
