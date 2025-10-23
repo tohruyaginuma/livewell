@@ -8,38 +8,51 @@ import { StatusBadge } from "./status-badge";
 import { Progress } from "./ui/progress";
 import { DtItem } from "@/frontend/components/dt-item";
 import { Calendar } from "@/frontend/components/ui/calendar";
-import { useState } from "react";
-
+import { useCallback, useEffect, useState } from "react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/shared/constants";
-import { useMeStore } from "../stores/use-me-store";
+import { UserMedicationStatusListItemResponse } from "@/server/service/user-medication-status-list-item-response";
+import { Spinner } from "./ui/spinner";
 
-type Props = {
-  callback: () => void;
-};
-
-export const SheetMedication = (props: Props) => {
-  const { callback } = props;
-
+export const SheetMedication = () => {
   const today = dayjs();
 
   const { isOpen, item, onClose } = useSheetMedicationStore();
 
+  const [isLoadingDates, setIsLoadingDates] = useState(false);
+
   const [selectedDay, setSelectedDay] = useState<Date>(today.toDate());
+  const [takenDates, setTakenDates] = useState<
+    UserMedicationStatusListItemResponse[]
+  >([]);
+
   const { onOpen: onOpenDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
   const { onOpen: onOpenEditMedication } = useEditMedicationDrawerStore();
-  const { id: userId } = useMeStore();
+
+  const fetchTakenDates = useCallback(async () => {
+    if (!item) return;
+
+    try {
+      setIsLoadingDates(true);
+      const response = await fetch(`/api/user-medications/${item?.id}/takens`);
+      const data = await response.json();
+      setTakenDates(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingDates(false);
+    }
+  }, [item]);
 
   const onClickTakenDose = async () => {
     try {
-      await fetch(`/api/user-medications/${item?.id}/taken`, {
+      await fetch(`/api/user-medications/${item?.id}/takens`, {
         method: "POST",
         body: JSON.stringify({ takenDate: selectedDay.toISOString() }),
       });
-
-      await callback();
+      await fetchTakenDates();
       toast.success("Taken dose successfully");
     } catch (error) {
       toast.error("Failed to take dose");
@@ -53,16 +66,20 @@ export const SheetMedication = (props: Props) => {
     }
 
     try {
-      await fetch(`/api/user-medications/${item?.id}/taken/${takenId}`, {
+      await fetch(`/api/user-medications/${item?.id}/takens/${takenId}`, {
         method: "DELETE",
       });
 
-      await callback();
+      await fetchTakenDates();
       toast.success("Cancelled taken dose");
     } catch (error) {
       toast.error("Failed to cancel taken dose");
     }
   };
+
+  useEffect(() => {
+    fetchTakenDates();
+  }, [fetchTakenDates]);
 
   if (!item) return null;
 
@@ -131,35 +148,39 @@ export const SheetMedication = (props: Props) => {
           <DtItem label="Medication Remaining" value={item.quantityReceived} />
         </dl>
         <div className="flex flex-col gap-2 w-fit">
-          <Calendar
-            mode="single"
-            required
-            selected={selectedDay}
-            onSelect={setSelectedDay}
-            modifiers={{
-              disabled: { after: today.toDate() },
-              active: item.takenDates.map(
-                (date: { id: number; takenDate: string }) =>
-                  new Date(date.takenDate),
-              ),
-            }}
-            modifiersClassNames={{
-              active: "rounded-md bg-primary text-primary-foreground",
-            }}
-            className="rounded-lg border"
-          />
+          {isLoadingDates ? (
+            <div className="flex justify-center items-center h-full">
+              <Spinner className="w-4 h-4 animate-spin" />
+            </div>
+          ) : (
+            <Calendar
+              mode="single"
+              required
+              selected={selectedDay}
+              onSelect={setSelectedDay}
+              modifiers={{
+                disabled: { after: today.toDate() },
+                active: takenDates.map(
+                  (takenDate) => new Date(takenDate.takenDate),
+                ),
+              }}
+              modifiersClassNames={{
+                active: "rounded-md bg-primary text-primary-foreground",
+              }}
+              className="rounded-lg border"
+            />
+          )}
           Selected Day: {selectedDay && dayjs(selectedDay).format(DATE_FORMAT)}
-          {item.takenDates.some((date: { id: number; takenDate: string }) =>
-            dayjs(date.takenDate).isSame(dayjs(selectedDay), "day"),
+          {takenDates.find((takenDate) =>
+            dayjs(takenDate.takenDate).isSame(dayjs(selectedDay), "day"),
           ) ? (
             <Button
               variant="destructive"
               size="sm"
               onClick={() =>
                 onClickCancelTakenDose(
-                  item.takenDates.find(
-                    (date: { id: number; takenDate: string }) =>
-                      dayjs(date.takenDate).isSame(dayjs(selectedDay), "day"),
+                  takenDates.find((t) =>
+                    dayjs(t.takenDate).isSame(dayjs(selectedDay), "day"),
                   )?.id ?? null,
                 )
               }

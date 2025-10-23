@@ -6,9 +6,9 @@ import type {
 } from "@/server/domain/user-medication-status";
 
 export interface IUserMedicationStatusRepository {
-  findById(
-    id: UserMedicationStatusId,
-  ): Promise<UserMedicationStatus | undefined>;
+  findAllByUserMedicationId(
+    userMedicationId: UserMedicationId,
+  ): Promise<UserMedicationStatus[]>;
   findAllByUserMedicationIds(
     userMedicationIds: UserMedicationId[],
   ): Promise<UserMedicationStatus[]>;

@@ -1,8 +1,40 @@
 import { container } from "@/server/lib/container";
 import type { Params } from "next/dist/server/request/params";
 import { NextRequest, NextResponse } from "next/server";
-import { UserMedicationStatusCreateSchema } from "@/app/api/user-medications/[user-medication-id]/taken/schemas";
+import { UserMedicationStatusCreateSchema } from "@/app/api/user-medications/[user-medication-id]/takens/schemas";
 import { ValidationError } from "@/shared/errors";
+
+export async function GET(
+  _req: NextRequest,
+  context: { params: Promise<Params> },
+) {
+  const { "user-medication-id": userMedicationIdParam } = await context.params;
+  const userMedicationIdInt = Number.parseInt(
+    userMedicationIdParam as string,
+    10,
+  );
+
+  if (Number.isNaN(userMedicationIdInt)) {
+    return NextResponse.json(
+      { message: "Invalid medication ID" },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const userMedicationStatuses =
+      await container.userMedicationStatusService.findAllByUserMedicationId(
+        userMedicationIdInt,
+      );
+
+    return NextResponse.json(userMedicationStatuses, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(
   req: NextRequest,
@@ -40,10 +72,7 @@ export async function POST(
         takenDate,
       );
 
-    return NextResponse.json(
-      { id: userMedicationStatus.id, takenDate: takenDate.toISOString() },
-      { status: 201 },
-    );
+    return NextResponse.json(userMedicationStatus, { status: 201 });
   } catch (error) {
     if (error instanceof ValidationError) {
       return NextResponse.json({ message: error.message }, { status: 400 });

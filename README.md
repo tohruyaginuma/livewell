@@ -151,7 +151,29 @@ HTTP 204 No Content
 
 ---
 
-### POST `/user-medications/:userMedicationId/taken`
+### GET `/user-medications/:userMedicationId/takens`
+
+**Request:**
+```json
+{
+    "takenDate": {
+        "id": number,
+        "date": string
+    }[]
+}
+```
+
+**Response:**
+```json
+{
+    "id": number,
+    "takenDate": string
+}
+```
+
+---
+
+### POST `/user-medications/:userMedicationId/takens`
 
 **Request:**
 ```json
@@ -170,7 +192,7 @@ HTTP 204 No Content
 
 ---
 
-### DELETE `/user-medications/:userMedicationId/taken/:takenId`
+### DELETE `/user-medications/:userMedicationId/takens/:takenId`
 
 **Request:**  
 _No body required_

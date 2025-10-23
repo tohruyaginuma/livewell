@@ -22,10 +22,13 @@ export class UserMedicationStatusRepository
     this.#nextId = (maxId + 1) as UserMedicationStatusId;
   }
 
-  async findById(
-    id: UserMedicationStatusId,
-  ): Promise<UserMedicationStatus | undefined> {
-    return this.#byId.get(id);
+  async findAllByUserMedicationId(
+    userMedicationId: UserMedicationId,
+  ): Promise<UserMedicationStatus[]> {
+    const statuses = Array.from(this.#byId.values()).filter(
+      (s) => s.userMedicationId === userMedicationId,
+    );
+    return statuses;
   }
 
   async findAllByUserMedicationIds(
