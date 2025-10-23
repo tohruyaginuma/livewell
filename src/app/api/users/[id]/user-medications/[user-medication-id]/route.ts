@@ -24,7 +24,7 @@ export async function PUT(
 
   const json = await req.json();
   const parsed = UserMedicationUpdateSchema.safeParse(json);
-  console.log(parsed);
+
   if (!parsed.success) {
     return NextResponse.json(
       { message: new ValidationError(parsed.error.message).message },

@@ -17,7 +17,7 @@ import { Input } from "@/frontend/components/ui/input";
 import { toast } from "sonner";
 import { API_URL } from "@/shared/constants";
 import { useMeStore } from "../stores/use-me-store";
-import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-list-item-response";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),

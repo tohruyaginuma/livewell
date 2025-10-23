@@ -11,7 +11,7 @@ import {
 import { Progress } from "@/frontend/components/ui/progress";
 import { IconEye } from "@tabler/icons-react";
 import { Button } from "./ui/button";
-import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-list-item-response";
 import { Spinner } from "./ui/spinner";
 import { StatusBadge } from "./status-badge";
 import dayjs from "dayjs";

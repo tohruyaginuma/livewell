@@ -16,6 +16,7 @@ import { Medication } from "../domain/medication";
 import { MedicationRepository } from "../repository/medication";
 import { UserMedicationStatus } from "../domain/user-medication-status";
 import { UserMedicationStatusRepository } from "../repository/user-medication-status";
+import { UserMedicationStatusService } from "../service/user-medication-status";
 
 const domainUsers: User[] = users.map((user) => new User(user.id, user.name));
 
@@ -63,4 +64,12 @@ const userMedicationService = new UserMedicationService(
   userMedicationStatusRepository,
 );
 
-export const container = { userService, userMedicationService };
+const userMedicationStatusService = new UserMedicationStatusService(
+  userMedicationStatusRepository,
+);
+
+export const container = {
+  userService,
+  userMedicationService,
+  userMedicationStatusService,
+};

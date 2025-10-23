@@ -5,12 +5,12 @@ import type { IUserMedicationStatusRepository } from "@/server/domain/user-medic
 import type { Medication } from "@/server/domain/medication";
 import type { UserMedication } from "@/server/domain/user-medication";
 import type { UserMedicationStatus } from "@/server/domain/user-medication-status";
-import { UserMedicationResponse } from "./UserMedicationResponse";
+import { UserMedicationResponse } from "./user-medication-response";
 
 import {
   UserMedicationListItemResponse,
   type RefillStatus,
-} from "@/server/service/user-medication-response";
+} from "@/server/service/user-medication-list-item-response";
 import { UserMedicationCreateResponse } from "@/server/service/user-medication-create-response";
 import { MEDICATION_STATUS } from "@/shared/constants";
 
@@ -103,16 +103,20 @@ export class UserMedicationService {
 
       // Taken statuses
       const takenByDay = new Map<string, number>();
-      const logs = statusesByUM.get(um.id) ?? [];
-      for (const s of logs) {
+
+      const statuses = statusesByUM.get(um.id) ?? [];
+
+      for (const s of statuses) {
         const d = s.takenDate;
         takenByDay.set(d, (takenByDay.get(d) ?? 0) + 1);
       }
       const taken = Array.from(takenByDay.values())
         .map((cnt) => Math.min(cnt, um.frequency))
         .reduce((a, b) => a + b, 0);
-
-      const takenDates = Array.from(takenByDay.keys()).sort();
+      const takenDates = statuses.map((s) => ({
+        id: s.id,
+        takenDate: s.takenDate,
+      }));
 
       // Adherence calculation
       const adherence = (taken / elapsedDays) * 100;

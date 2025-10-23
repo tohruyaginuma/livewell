@@ -13,8 +13,7 @@ export class UserMedicationStatusRepository
   #nextId: UserMedicationStatusId;
 
   constructor(userMedicationStatus: ReadonlyArray<UserMedicationStatus> = []) {
-    const copy = [...userMedicationStatus];
-    this.#byId = new Map(copy.map((s) => [s.id, s]));
+    this.#byId = new Map(userMedicationStatus.map((s) => [s.id, s]));
 
     const maxId =
       userMedicationStatus.length === 0

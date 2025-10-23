@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-list-item-response";
 
 type EditMedicationDrawerStore = {
   isOpen: boolean;

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DrawerMedicationCreate } from "@/frontend/components/drawer-medication-create";
 import { Button } from "@/frontend/components/ui/button";
 import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
-import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-list-item-response";
 import { API_URL } from "@/shared/constants";
 import { SheetMedication } from "@/frontend/components/sheet-medication";
 import { DeleteMedicationAlertDialog } from "@/frontend/components/delete-medication-alert-dialog";
@@ -91,7 +91,11 @@ export default function Home() {
           onCloseCreateMedicationDrawer();
         }}
       />
-      <SheetMedication />
+      <SheetMedication
+        callback={async () => {
+          await fetchData();
+        }}
+      />
       <DeleteMedicationAlertDialog callback={onClickDeleteMedication} />
       <DrawerMedicationEdit callback={onClickEditMedication} />
     </>

@@ -13,8 +13,15 @@ import { useState } from "react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/shared/constants";
+import { useMeStore } from "../stores/use-me-store";
 
-export const SheetMedication = () => {
+type Props = {
+  callback: () => void;
+};
+
+export const SheetMedication = (props: Props) => {
+  const { callback } = props;
+
   const today = dayjs();
 
   const { isOpen, item, onClose } = useSheetMedicationStore();
@@ -23,13 +30,41 @@ export const SheetMedication = () => {
   const { onOpen: onOpenDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
   const { onOpen: onOpenEditMedication } = useEditMedicationDrawerStore();
+  const { id: userId } = useMeStore();
 
   const onClickTakenDose = async () => {
-    toast.success("Taken dose successfully");
+    try {
+      await fetch(`/api/users/${userId}/user-medications/${item?.id}/taken`, {
+        method: "POST",
+        body: JSON.stringify({ takenDate: selectedDay.toISOString() }),
+      });
+
+      await callback();
+      toast.success("Taken dose successfully");
+    } catch (error) {
+      toast.error("Failed to take dose");
+    }
   };
 
-  const onClickCancelTakenDose = async () => {
-    toast.success("Cancelled taken dose");
+  const onClickCancelTakenDose = async (takenId: number | null) => {
+    if (!takenId) {
+      toast.error("No taken ID found");
+      return;
+    }
+
+    try {
+      await fetch(
+        `/api/users/${userId}/user-medications/${item?.id}/taken/${takenId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      await callback();
+      toast.success("Cancelled taken dose");
+    } catch (error) {
+      toast.error("Failed to cancel taken dose");
+    }
   };
 
   if (!item) return null;
@@ -106,7 +141,10 @@ export const SheetMedication = () => {
             onSelect={setSelectedDay}
             modifiers={{
               disabled: { after: today.toDate() },
-              active: item.takenDates.map((date: string) => new Date(date)),
+              active: item.takenDates.map(
+                (date: { id: number; takenDate: string }) =>
+                  new Date(date.takenDate),
+              ),
             }}
             modifiersClassNames={{
               active: "rounded-md bg-primary text-primary-foreground",
@@ -114,11 +152,20 @@ export const SheetMedication = () => {
             className="rounded-lg border"
           />
           Selected Day: {selectedDay && dayjs(selectedDay).format(DATE_FORMAT)}
-          {item.takenDates.includes(dayjs(selectedDay).format(DATE_FORMAT)) ? (
+          {item.takenDates.some((date: { id: number; takenDate: string }) =>
+            dayjs(date.takenDate).isSame(dayjs(selectedDay), "day"),
+          ) ? (
             <Button
               variant="destructive"
               size="sm"
-              onClick={onClickCancelTakenDose}
+              onClick={() =>
+                onClickCancelTakenDose(
+                  item.takenDates.find(
+                    (date: { id: number; takenDate: string }) =>
+                      dayjs(date.takenDate).isSame(dayjs(selectedDay), "day"),
+                  )?.id ?? null,
+                )
+              }
             >
               Mark as not taken
             </Button>

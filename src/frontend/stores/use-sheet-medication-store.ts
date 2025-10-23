@@ -1,4 +1,4 @@
-import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-list-item-response";
 import { create } from "zustand";
 
 type SheetMedicationStore = {

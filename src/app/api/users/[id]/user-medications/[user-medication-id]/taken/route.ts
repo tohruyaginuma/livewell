@@ -1,27 +1,58 @@
+import { container } from "@/server/lib/container";
 import type { Params } from "next/dist/server/request/params";
 import { NextRequest, NextResponse } from "next/server";
+import { UserMedicationStatusCreateSchema } from "@/app/api/users/[id]/user-medications/[user-medication-id]/taken/schemas";
+import { ValidationError } from "@/shared/errors";
 
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   context: { params: Promise<Params> },
 ) {
-  const { id, medicationId } = await context.params;
+  const { id, "user-medication-id": userMedicationIdParam } =
+    await context.params;
 
   const userId = Number.parseInt(id as string, 10);
-  const medicationIdInt = Number.parseInt(medicationId as string, 10);
+  const userMedicationIdInt = Number.parseInt(
+    userMedicationIdParam as string,
+    10,
+  );
 
-  if (Number.isNaN(userId) || Number.isNaN(medicationIdInt)) {
+  if (Number.isNaN(userId) || Number.isNaN(userMedicationIdInt)) {
     return NextResponse.json(
       { message: "Invalid user ID or medication ID" },
       { status: 400 },
     );
   }
 
-  console.log("get request user id is", userId);
-  console.log("get request medication id is", medicationIdInt);
+  const json = await req.json();
+  const parsed = UserMedicationStatusCreateSchema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { message: new ValidationError(parsed.error.message).message },
+      { status: 400 },
+    );
+  }
 
-  return NextResponse.json(
-    { message: "User medication retrieved" },
-    { status: 200 },
-  );
+  const { takenDate } = parsed.data;
+
+  try {
+    const userMedicationStatus =
+      await container.userMedicationStatusService.createUserMedicationStatus(
+        userMedicationIdInt,
+        takenDate,
+      );
+
+    return NextResponse.json(
+      { id: userMedicationStatus.id, takenDate: takenDate.toISOString() },
+      { status: 201 },
+    );
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }
