@@ -151,7 +151,7 @@ HTTP 204 No Content
 
 ---
 
-### POST `/users/:userId/user-medications/:userMedicationId/taken`
+### POST `/user-medications/:userMedicationId/taken`
 
 **Request:**
 ```json
@@ -170,7 +170,7 @@ HTTP 204 No Content
 
 ---
 
-### DELETE `/users/:userId/user-medications/:userMedicationId/taken/:takenId`
+### DELETE `/user-medications/:userMedicationId/taken/:takenId`
 
 **Request:**  
 _No body required_

@@ -1,25 +1,23 @@
 import { container } from "@/server/lib/container";
 import type { Params } from "next/dist/server/request/params";
 import { NextRequest, NextResponse } from "next/server";
-import { UserMedicationStatusCreateSchema } from "@/app/api/users/[id]/user-medications/[user-medication-id]/taken/schemas";
+import { UserMedicationStatusCreateSchema } from "@/app/api/user-medications/[user-medication-id]/taken/schemas";
 import { ValidationError } from "@/shared/errors";
 
 export async function POST(
   req: NextRequest,
   context: { params: Promise<Params> },
 ) {
-  const { id, "user-medication-id": userMedicationIdParam } =
-    await context.params;
+  const { "user-medication-id": userMedicationIdParam } = await context.params;
 
-  const userId = Number.parseInt(id as string, 10);
   const userMedicationIdInt = Number.parseInt(
     userMedicationIdParam as string,
     10,
   );
 
-  if (Number.isNaN(userId) || Number.isNaN(userMedicationIdInt)) {
+  if (Number.isNaN(userMedicationIdInt)) {
     return NextResponse.json(
-      { message: "Invalid user ID or medication ID" },
+      { message: "Invalid medication ID" },
       { status: 400 },
     );
   }

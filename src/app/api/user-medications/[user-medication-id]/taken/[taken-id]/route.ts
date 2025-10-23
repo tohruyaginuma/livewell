@@ -7,23 +7,15 @@ export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<Params> },
 ) {
-  const {
-    id,
-    "user-medication-id": userMedicationId,
-    "taken-id": takenId,
-  } = await context.params;
+  const { "user-medication-id": userMedicationId, "taken-id": takenId } =
+    await context.params;
 
-  const userId = Number.parseInt(id as string, 10);
   const userMedicationIdInt = Number.parseInt(userMedicationId as string, 10);
   const takenIdInt = Number.parseInt(takenId as string, 10);
 
-  if (
-    Number.isNaN(userId) ||
-    Number.isNaN(userMedicationIdInt) ||
-    Number.isNaN(takenIdInt)
-  ) {
+  if (Number.isNaN(userMedicationIdInt) || Number.isNaN(takenIdInt)) {
     return NextResponse.json(
-      { message: "Invalid user ID or medication ID or taken ID" },
+      { message: "Invalid medication ID or taken ID" },
       { status: 400 },
     );
   }

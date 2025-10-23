@@ -34,7 +34,7 @@ export const SheetMedication = (props: Props) => {
 
   const onClickTakenDose = async () => {
     try {
-      await fetch(`/api/users/${userId}/user-medications/${item?.id}/taken`, {
+      await fetch(`/api/user-medications/${item?.id}/taken`, {
         method: "POST",
         body: JSON.stringify({ takenDate: selectedDay.toISOString() }),
       });
@@ -53,12 +53,9 @@ export const SheetMedication = (props: Props) => {
     }
 
     try {
-      await fetch(
-        `/api/users/${userId}/user-medications/${item?.id}/taken/${takenId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      await fetch(`/api/user-medications/${item?.id}/taken/${takenId}`, {
+        method: "DELETE",
+      });
 
       await callback();
       toast.success("Cancelled taken dose");
