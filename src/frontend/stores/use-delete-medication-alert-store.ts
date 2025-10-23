@@ -2,12 +2,17 @@ import { create } from "zustand";
 
 type DeleteMedicationAlertStore = {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  userMedicationId: number | null;
+  onOpen: (userMedicationId: number) => void;
+  onClose: () => void;
 };
 
 export const useDeleteMedicationAlertStore = create<DeleteMedicationAlertStore>(
   (set) => ({
     isOpen: false,
-    setIsOpen: (isOpen: boolean) => set({ isOpen }),
+    userMedicationId: null,
+    onOpen: (userMedicationId: number) =>
+      set({ isOpen: true, userMedicationId }),
+    onClose: () => set({ isOpen: false, userMedicationId: null }),
   }),
 );

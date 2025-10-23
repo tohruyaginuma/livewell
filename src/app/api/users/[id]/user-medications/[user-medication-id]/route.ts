@@ -1,17 +1,17 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { container } from "@/server/lib/container";
-import { UserMedicationUpdateSchema } from "@/app/api/users/[id]/medications/[userMedicationId]/schemas";
+import { UserMedicationUpdateSchema } from "@/app/api/users/[id]/user-medications/[user-medication-id]/schemas";
 import { ValidationError } from "@/shared/errors";
 
-type Params = { id: string; userMedicationId: string };
+type Params = { id: string; "user-medication-id": string };
 
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<Params> },
 ) {
-  const { id, userMedicationId: userMedicationIdParam } = await context.params;
-  console.log(id, userMedicationIdParam);
+  const { id, "user-medication-id": userMedicationIdParam } =
+    await context.params;
   const userId = Number.parseInt(id, 10);
   const userMedicationIdInt = Number.parseInt(userMedicationIdParam, 10);
 
@@ -35,7 +35,6 @@ export async function PUT(
   const { name, dosage, frequency, quantityReceived, daysSupply, startDate } =
     parsed.data;
 
-  console.log(name, dosage, frequency, quantityReceived, daysSupply, startDate);
   try {
     const userMedication =
       await container.userMedicationService.getUserMedicationById(
@@ -78,11 +77,11 @@ export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<Params> },
 ) {
-  const { id, userMedicationId } = await context.params;
+  const { id, "user-medication-id": userMedicationIdParam } =
+    await context.params;
 
   const userId = Number.parseInt(id, 10);
-  const userMedicationIdInt = Number.parseInt(userMedicationId, 10);
-  console.log(userId, userMedicationIdInt);
+  const userMedicationIdInt = Number.parseInt(userMedicationIdParam, 10);
   if (Number.isNaN(userId) || Number.isNaN(userMedicationIdInt)) {
     return NextResponse.json(
       { message: "Invalid user ID or medication ID" },

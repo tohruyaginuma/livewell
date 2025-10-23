@@ -1,7 +1,7 @@
 import { container } from "@/server/lib/container";
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "@/shared/errors";
-import { UserMedicationCreateSchema } from "@/app/api/users/[id]/medications/schemas";
+import { UserMedicationCreateSchema } from "@/app/api/users/[id]/user-medications/schemas";
 type Params = { id: string };
 
 export async function GET(

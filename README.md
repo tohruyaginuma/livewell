@@ -63,7 +63,7 @@ _No body required_
 
 ---
 
-### GET `/users/:userId/medications`
+### GET `/users/:userId/user-medications`
 
 **Request:**  
 _No body required_
@@ -83,7 +83,7 @@ _No body required_
 
 ---
 
-### POST `/users/:userId/medications`
+### POST `/users/:userId/user-medications`
 
 **Request:**
 ```json
@@ -112,7 +112,7 @@ _No body required_
 
 ---
 
-### PUT `/users/:userId/medications/:userMedicationId`
+### PUT `/users/:userId/user-medications/:userMedicationId`
 
 **Request:**
 ```json
@@ -141,7 +141,7 @@ _No body required_
 
 ---
 
-### DELETE `/users/:userId/medications/:userMedicationId`
+### DELETE `/users/:userId/user-medications/:userMedicationId`
 
 **Request:**  
 _No body required_
@@ -151,7 +151,7 @@ HTTP 204 No Content
 
 ---
 
-### POST `/users/:userId/medications/:userMedicationId/taken`
+### POST `/users/:userId/user-medications/:userMedicationId/taken`
 
 **Request:**
 ```json
@@ -170,7 +170,7 @@ HTTP 204 No Content
 
 ---
 
-### DELETE `/users/:userId/medications/:userMedicationId/taken/:takenId`
+### DELETE `/users/:userId/user-medications/:userMedicationId/taken/:takenId`
 
 **Request:**  
 _No body required_

@@ -20,7 +20,7 @@ export const SheetMedication = () => {
   const { isOpen, item, onClose } = useSheetMedicationStore();
 
   const [selectedDay, setSelectedDay] = useState<Date>(today.toDate());
-  const { setIsOpen: setIsOpenDeleteMedicationAlert } =
+  const { onOpen: onOpenDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
   const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
 
@@ -61,7 +61,7 @@ export const SheetMedication = () => {
             <Button
               size="sm"
               onClick={() => {
-                setIsOpenDeleteMedicationAlert(true);
+                onOpenDeleteMedicationAlert(item.id);
               }}
               variant="destructive"
             >

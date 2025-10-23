@@ -61,7 +61,7 @@ export const FormMedication = (props: props) => {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/users/${userId}/medications`,
+        `${API_URL}/api/users/${userId}/user-medications`,
         {
           method: "POST",
           body: JSON.stringify(values),

@@ -13,7 +13,7 @@ type AlertDialogProps = {
   title: string;
   description: string;
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  onClose: () => void;
   onConfirm: () => Promise<void>;
 };
 
@@ -21,11 +21,11 @@ export const AlertDialog = ({
   title,
   description,
   isOpen,
-  setIsOpen,
+  onClose,
   onConfirm,
 }: AlertDialogProps) => {
   return (
-    <AlertDialogComponent open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialogComponent open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

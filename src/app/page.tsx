@@ -14,6 +14,7 @@ import { DrawerMedicationEdit } from "@/frontend/components/drawer-medication-ed
 import { toast } from "sonner";
 import { useDeleteMedicationAlertStore } from "@/frontend/stores/use-delete-medication-alert-store";
 import { useEditMedicationDrawerStore } from "@/frontend/stores/use-edit-medication-drawer-store";
+import { useSheetMedicationStore } from "@/frontend/stores/use-sheet-medication-store";
 
 export default function Home() {
   const { setMe } = useMeStore();
@@ -22,19 +23,11 @@ export default function Home() {
   const [userMedications, setUserMedications] = useState<
     UserMedicationListItemResponse[]
   >([]);
-  const { setIsOpen: setIsOpenDeleteMedicationAlert } =
+
+  const { onClose: onCloseDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
+  const { onClose: onCloseSheetMedication } = useSheetMedicationStore();
   const { setIsOpen: setIsOpenEditMedication } = useEditMedicationDrawerStore();
-
-  const onClickDeleteMedication = async () => {
-    toast.success("Medication deleted successfully");
-    setIsOpenDeleteMedicationAlert(false);
-  };
-
-  const onClickEditMedication = async () => {
-    toast.success("Medication updated successfully");
-    setIsOpenEditMedication(false);
-  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -45,7 +38,7 @@ export default function Home() {
       setMe(userData.id, userData.name);
 
       const userMedications = await fetch(
-        `${API_URL}/api/users/${userId}/medications`,
+        `${API_URL}/api/users/${userId}/user-medications`,
       );
       const userMedicationsData = await userMedications.json();
       setUserMedications(userMedicationsData);
@@ -55,6 +48,20 @@ export default function Home() {
       setIsLoading(false);
     }
   }, [setMe]);
+
+  const onClickDeleteMedication = async () => {
+    await fetchData();
+    onCloseSheetMedication();
+    onCloseDeleteMedicationAlert();
+
+    toast.success("Medication deleted successfully");
+  };
+
+  const onClickEditMedication = async () => {
+    setIsOpenEditMedication(false);
+
+    toast.success("Medication updated successfully");
+  };
 
   useEffect(() => {
     fetchData();
