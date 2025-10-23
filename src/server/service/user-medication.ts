@@ -5,16 +5,18 @@ import type { IUserMedicationStatusRepository } from "@/server/domain/user-medic
 import type { Medication } from "@/server/domain/medication";
 import type { UserMedication } from "@/server/domain/user-medication";
 import type { UserMedicationStatus } from "@/server/domain/user-medication-status";
+import { UserMedicationResponse } from "./UserMedicationResponse";
 
 import {
-  UserMedicationResponse,
+  UserMedicationListItemResponse,
   type RefillStatus,
 } from "@/server/service/user-medication-response";
 import { UserMedicationCreateResponse } from "@/server/service/user-medication-create-response";
 import { MEDICATION_STATUS } from "@/shared/constants";
 
-import dayjs, { Dayjs } from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import { DATE_FORMAT } from "@/shared/constants";
+import { UserMedicationUpdateResponse } from "./user-medication-update-response";
 
 export class UserMedicationService {
   readonly #userMedicationRepository: IUserMedicationRepository;
@@ -39,9 +41,27 @@ export class UserMedicationService {
     return MEDICATION_STATUS.ON_TRACK;
   }
 
+  async getUserMedicationById(
+    userMedicationId: number,
+  ): Promise<UserMedicationResponse | undefined> {
+    const userMedication =
+      await this.#userMedicationRepository.findById(userMedicationId);
+
+    if (!userMedication) return undefined;
+
+    return new UserMedicationResponse({
+      id: userMedication.id,
+      medicationId: userMedication.medicationId,
+      dosage: userMedication.dosage,
+      frequency: userMedication.frequency,
+      startDate: userMedication.startDate,
+      daysSupply: userMedication.daysSupply,
+    });
+  }
+
   async getUserMedicationsByUserId(
-    userId: UserId,
-  ): Promise<ReadonlyArray<UserMedicationResponse>> {
+    userId: number,
+  ): Promise<ReadonlyArray<UserMedicationListItemResponse>> {
     const userMedications =
       await this.#userMedicationRepository.findAllByUserId(userId);
     if (userMedications.length === 0) return [];
@@ -110,7 +130,7 @@ export class UserMedicationService {
       // refill status
       const refillStatus = this.getRefillStatus(today, nextRefill);
 
-      return new UserMedicationResponse({
+      return new UserMedicationListItemResponse({
         id: um.id,
         medicationId: um.medicationId,
         medicationName: med?.name ?? "",
@@ -131,7 +151,7 @@ export class UserMedicationService {
   }
 
   async createUserMedication(
-    userId: UserId,
+    userId: number,
     name: string,
     quantityReceived: number,
     dosage: number,
@@ -139,48 +159,72 @@ export class UserMedicationService {
     startDate: string,
     daysSupply: number,
   ): Promise<UserMedicationCreateResponse> {
-    const createdMedication = await this.#medicationRepository.create(
-      new (
-        Object.getPrototypeOf({}).constructor as {
-          new (id: number, name: string): Medication;
-        }
-      )(0, name),
-    );
+    const medication = await this.#medicationRepository.create(name);
 
     const createdUserMedication = await this.#userMedicationRepository.create(
-      new (
-        Object.getPrototypeOf({}).constructor as {
-          new (
-            id: number,
-            userId: UserId,
-            medicationId: number,
-            quantityReceived: number,
-            dosage: number,
-            frequency: number,
-            daysSupply: number,
-            startDate: string,
-          ): UserMedication;
-        }
-      )(
-        0,
-        userId,
-        createdMedication.id,
-        quantityReceived,
-        dosage,
-        frequency,
-        daysSupply,
-        startDate,
-      ),
+      userId,
+      medication.id,
+      quantityReceived,
+      dosage,
+      frequency,
+      daysSupply,
+      startDate,
     );
 
     return new UserMedicationCreateResponse({
       id: createdUserMedication.id,
       medicationId: createdUserMedication.medicationId,
-      medicationName: createdMedication.name,
+      medicationName: medication.name,
       quantityReceived: createdUserMedication.quantityReceived,
       dosage: createdUserMedication.dosage,
       startDate: dayjs(createdUserMedication.startDate, DATE_FORMAT).toDate(),
       daysSupply: createdUserMedication.daysSupply,
     });
+  }
+
+  async updateUserMedication(
+    userMedicationId: number,
+    userId: UserId,
+    medicationId: number,
+    name: string,
+    quantityReceived: number,
+    dosage: number,
+    frequency: number,
+    startDate: string,
+    daysSupply: number,
+  ): Promise<UserMedicationUpdateResponse> {
+    const medication = await this.#medicationRepository.update(
+      medicationId,
+      name,
+    );
+
+    const updatedUserMedication = await this.#userMedicationRepository.update(
+      userMedicationId,
+      userId,
+      medication.id,
+      quantityReceived,
+      dosage,
+      frequency,
+      daysSupply,
+      startDate,
+    );
+    return new UserMedicationUpdateResponse({
+      id: updatedUserMedication.id,
+      medicationId: updatedUserMedication.medicationId,
+      medicationName: medication.name,
+      quantityReceived: updatedUserMedication.quantityReceived,
+      dosage: updatedUserMedication.dosage,
+      frequency: updatedUserMedication.frequency,
+      startDate: dayjs(updatedUserMedication.startDate, DATE_FORMAT).toDate(),
+      daysSupply: updatedUserMedication.daysSupply,
+    });
+  }
+
+  async deleteUserMedication(userMedicationId: number): Promise<void> {
+    await this.#userMedicationRepository.delete(userMedicationId);
+
+    await this.#userMedicationStatusRepository.deleteAllByUserMedicationIds([
+      userMedicationId,
+    ]);
   }
 }

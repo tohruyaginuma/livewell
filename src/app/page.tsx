@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DrawerMedicationCreate } from "@/frontend/components/drawer-medication-create";
 import { Button } from "@/frontend/components/ui/button";
 import { useCreateMedicationDrawerStore } from "@/frontend/stores/use-create-medication-drawer-store";
-import { UserMedicationResponse } from "@/server/service/user-medication-response";
+import { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
 import { API_URL } from "@/shared/constants";
 import { SheetMedication } from "@/frontend/components/sheet-medication";
 import { DeleteMedicationAlertDialog } from "@/frontend/components/delete-medication-alert-dialog";
@@ -20,7 +20,7 @@ export default function Home() {
   const { setIsOpen } = useCreateMedicationDrawerStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userMedications, setUserMedications] = useState<
-    UserMedicationResponse[]
+    UserMedicationListItemResponse[]
   >([]);
   const { setIsOpen: setIsOpenDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
@@ -74,8 +74,8 @@ export default function Home() {
       </div>
       <Table items={userMedications} isLoading={isLoading} />
       <DrawerMedicationCreate
-        callback={() => {
-          fetchData();
+        callback={async () => {
+          await fetchData();
           setIsOpen(false);
         }}
       />

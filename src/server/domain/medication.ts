@@ -1,10 +1,11 @@
 export type MedicationId = number;
+export type MedicationName = string;
 
 export class Medication {
   readonly #id: MedicationId;
-  readonly #name: string;
+  readonly #name: MedicationName;
 
-  constructor(id: MedicationId, name: string) {
+  constructor(id: MedicationId, name: MedicationName) {
     this.#id = id;
     this.#name = name;
   }
@@ -13,7 +14,7 @@ export class Medication {
     return this.#id;
   }
 
-  get name(): string {
+  get name(): MedicationName {
     return this.#name;
   }
 }

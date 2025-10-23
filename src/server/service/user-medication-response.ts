@@ -5,7 +5,7 @@ export type RefillStatus =
   | typeof MEDICATION_STATUS.ON_TRACK
   | typeof MEDICATION_STATUS.RUNNING_LOW;
 
-export class UserMedicationResponse {
+export class UserMedicationListItemResponse {
   readonly id: number;
   readonly medicationId: number;
   readonly medicationName: string;

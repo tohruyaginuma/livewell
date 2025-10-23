@@ -1,19 +1,21 @@
 export type UserMedicationId = number;
 export type UserId = number;
 export type MedicationId = number;
+export type QuantityReceived = number;
+export type Dosage = number;
 export type Frequency = number;
 export type DaysSupply = number;
-export type YmdDate = string;
+export type StartDate = string;
 
 export class UserMedication {
   readonly #id: UserMedicationId;
   readonly #userId: UserId;
   readonly #medicationId: MedicationId;
-  readonly #quantityReceived: number;
-  readonly #dosage: number;
+  readonly #quantityReceived: QuantityReceived;
+  readonly #dosage: Dosage;
   readonly #frequency: Frequency;
   readonly #daysSupply: DaysSupply;
-  readonly #startDate: YmdDate;
+  readonly #startDate: StartDate;
 
   constructor(
     id: UserMedicationId,
@@ -23,7 +25,7 @@ export class UserMedication {
     dosage: number,
     frequency: Frequency,
     daysSupply: DaysSupply,
-    startDate: YmdDate,
+    startDate: StartDate,
   ) {
     this.#id = id;
     this.#userId = userId;

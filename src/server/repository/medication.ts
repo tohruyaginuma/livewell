@@ -1,14 +1,22 @@
+import {
+  Medication,
+  type MedicationId,
+  type MedicationName,
+} from "@/server/domain/medication";
+
 import type { IMedicationRepository } from "@/server/domain/medication-repository";
-import { Medication, type MedicationId } from "../domain/medication";
 
 export class MedicationRepository implements IMedicationRepository {
   readonly #byId: Map<MedicationId, Medication>;
+  #nextId: MedicationId;
 
   constructor(medications: ReadonlyArray<Medication> = []) {
-    // copy to avoid external mutations
     this.#byId = new Map(
       medications.map((m) => [m.id, new Medication(m.id, m.name)]),
     );
+    const maxId =
+      medications.length === 0 ? 0 : Math.max(...medications.map((m) => m.id));
+    this.#nextId = (maxId + 1) as MedicationId;
   }
 
   async findById(id: MedicationId): Promise<Medication | undefined> {
@@ -25,25 +33,30 @@ export class MedicationRepository implements IMedicationRepository {
     return out;
   }
 
-  async create(medication: Medication): Promise<Medication> {
-    if (this.#byId.has(medication.id)) {
-      throw new Error(`Medication with id ${medication.id} already exists`);
-    }
-    const created = new Medication(medication.id, medication.name);
-    this.#byId.set(created.id, created);
-    return new Medication(created.id, created.name);
+  async create(name: MedicationName): Promise<Medication> {
+    const id = this.#nextId;
+    const medication = new Medication(id, name);
+    this.#byId.set(id, medication);
+
+    this.#nextId += 1;
+    return medication;
   }
 
-  async edit(medication: Medication): Promise<Medication> {
-    if (!this.#byId.has(medication.id)) {
-      throw new Error(`Medication with id ${medication.id} not found`);
+  async update(id: MedicationId, name: MedicationName): Promise<Medication> {
+    if (!this.#byId.has(id)) {
+      throw new Error(`Medication with id ${id} not found`);
     }
-    const updated = new Medication(medication.id, medication.name);
-    this.#byId.set(updated.id, updated);
-    return new Medication(updated.id, updated.name);
+
+    const medication = new Medication(id, name);
+    this.#byId.set(id, medication);
+    return medication;
   }
 
   async delete(id: MedicationId): Promise<void> {
+    if (!this.#byId.has(id)) {
+      throw new Error(`Medication with id ${id} not found`);
+    }
+
     this.#byId.delete(id);
   }
 }

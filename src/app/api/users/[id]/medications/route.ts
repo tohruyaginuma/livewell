@@ -1,6 +1,7 @@
 import { container } from "@/server/lib/container";
 import { NextRequest, NextResponse } from "next/server";
-
+import { ValidationError } from "@/shared/errors";
+import { UserMedicationCreateSchema } from "@/app/api/users/[id]/medications/schemas";
 type Params = { id: string };
 
 export async function GET(
@@ -36,7 +37,38 @@ export async function POST(
     return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
   }
 
-  const body = await req.json();
+  const json = await req.json();
+  const parsed = UserMedicationCreateSchema.safeParse(json);
 
-  return NextResponse.json({ message: "created (stub)" }, { status: 201 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { message: new ValidationError(parsed.error.message).message },
+      { status: 400 },
+    );
+  }
+
+  const { name, dosage, frequency, quantityReceived, daysSupply, startDate } =
+    parsed.data;
+
+  try {
+    const userMedication =
+      await container.userMedicationService.createUserMedication(
+        userId,
+        name,
+        quantityReceived,
+        dosage,
+        frequency,
+        startDate.toISOString(),
+        daysSupply,
+      );
+    return NextResponse.json(userMedication, { status: 201 });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }
