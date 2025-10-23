@@ -1,16 +1,16 @@
-import { UserMedicationResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
 import { create } from "zustand";
 
 type SheetMedicationStore = {
   isOpen: boolean;
-  item: UserMedicationResponse | null;
-  onOpen: (item: UserMedicationResponse) => void;
+  item: UserMedicationListItemResponse | null;
+  onOpen: (item: UserMedicationListItemResponse) => void;
   onClose: () => void;
 };
 
 export const useSheetMedicationStore = create<SheetMedicationStore>((set) => ({
   isOpen: false,
   item: null,
-  onOpen: (item: UserMedicationResponse) => set({ isOpen: true, item }),
+  onOpen: (item: UserMedicationListItemResponse) => set({ isOpen: true, item }),
   onClose: () => set({ isOpen: false, item: null }),
 }));

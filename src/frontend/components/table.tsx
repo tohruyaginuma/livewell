@@ -11,7 +11,7 @@ import {
 import { Progress } from "@/frontend/components/ui/progress";
 import { IconEye } from "@tabler/icons-react";
 import { Button } from "./ui/button";
-import type { UserMedicationResponse } from "@/server/service/user-medication-response";
+import type { UserMedicationListItemResponse } from "@/server/service/user-medication-response";
 import { Spinner } from "./ui/spinner";
 import { StatusBadge } from "./status-badge";
 import dayjs from "dayjs";
@@ -19,7 +19,7 @@ import { useSheetMedicationStore } from "../stores/use-sheet-medication-store";
 import { DATE_FORMAT } from "@/shared/constants";
 
 type Props = {
-  items: UserMedicationResponse[];
+  items: UserMedicationListItemResponse[];
   isLoading: boolean;
 };
 

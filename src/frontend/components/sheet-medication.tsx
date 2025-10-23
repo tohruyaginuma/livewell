@@ -106,7 +106,7 @@ export const SheetMedication = () => {
             onSelect={setSelectedDay}
             modifiers={{
               disabled: { after: today.toDate() },
-              active: item.takenDates.map((date) => new Date(date)),
+              active: item.takenDates.map((date: string) => new Date(date)),
             }}
             modifiersClassNames={{
               active: "rounded-md bg-primary text-primary-foreground",
