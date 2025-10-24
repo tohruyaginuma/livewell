@@ -14,6 +14,8 @@ import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/shared/constants";
 import { UserMedicationStatusListItemResponse } from "@/server/service/user-medication-status-list-item-response";
 import { Spinner } from "./ui/spinner";
+import { Separator } from "./ui/separator";
+import { CalendarIcon, Clock, Pill } from "lucide-react";
 
 export const SheetMedication = () => {
   const today = dayjs();
@@ -88,110 +90,168 @@ export const SheetMedication = () => {
       isOpen={isOpen}
       onClose={onClose}
       header={
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3 pr-8">
             <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">
               {item.medicationName}
             </h2>
             <StatusBadge status={1} />
-          </div>
-
-          <div className="flex items-center gap-4 w-full">
-            <div className="flex flex-col flex-grow">
-              <Progress
-                value={(item.remainingSupply / item.quantityReceived) * 100}
-              />
-              <span className="text-muted-foreground text-sm">
-                {item.remainingSupply}/{item.quantityReceived}
-              </span>
+            <div className="flex gap-2 ml-auto">
+              <Button
+                size="sm"
+                onClick={() => {
+                  onOpenDeleteMedicationAlert(item.id);
+                }}
+                variant="destructive"
+              >
+                <IconTrash />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onOpenEditMedication(item);
+                }}
+              >
+                <IconPencil />
+              </Button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              onClick={() => {
-                onOpenDeleteMedicationAlert(item.id);
-              }}
-              variant="destructive"
-            >
-              <IconTrash />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                onOpenEditMedication(item);
-              }}
-            >
-              <IconPencil />
-            </Button>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Overall Progress</span>
+              <span className="font-medium">
+                {item.remainingSupply}/{item.quantityReceived} remaining
+              </span>
+            </div>
+            <Progress
+              value={(item.remainingSupply / item.quantityReceived) * 100}
+              className="h-3"
+            />
           </div>
         </div>
       }
     >
-      <div className="flex justify-between">
-        <dl className="flex flex-col gap-2">
-          <DtItem label="Dosage" value={item.dosage} />
-          <DtItem label="Frequency" value={item.frequency} />
-          <DtItem
-            label="Start date"
-            value={dayjs(item.startDate).format(DATE_FORMAT)}
-          />
-          <DtItem label="Quantity Received" value={item.quantityReceived} />
-          <DtItem label="Days’ Supply." value={item.daysSupply} />
-          <DtItem label="Current Status" value={item.refillStatus} />
-          <DtItem
-            label="Calculate Refill Dates"
-            value={dayjs(item.nextRefill).format(DATE_FORMAT)}
-          />
-          <DtItem label="Doses Remaining" value={item.remainingSupply} />
-          <DtItem label="Medication Remaining" value={item.quantityReceived} />
-        </dl>
-        <div className="flex flex-col gap-2 w-fit">
-          <div className="relative w-full">
-            <Calendar
-              mode="single"
-              required
-              selected={selectedDay}
-              onSelect={setSelectedDay}
-              modifiers={{
-                disabled: { after: today.toDate() },
-                active: takenDates.map(
-                  (takenDate) => new Date(takenDate.takenDate),
-                ),
-              }}
-              modifiersClassNames={{
-                active: "rounded-md bg-primary text-primary-foreground",
-              }}
-              className="rounded-lg border"
-            />
-            {isLoadingDates ? (
-              <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-background/30">
-                <Spinner className="w-4 h-4 animate-spin" />
+      <Separator />
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Pill className="h-5 w-5 text-primary" />
+              Medication Details
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Dosage</span>
+                <span className="font-medium">{item.dosage} pill(s)</span>
               </div>
-            ) : null}
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Frequency</span>
+                <span className="font-medium">{item.frequency}x daily</span>
+              </div>
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Start Date</span>
+                <span className="font-medium">
+                  {dayjs(item.startDate).format(DATE_FORMAT)}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Quantity Received</span>
+                <span className="font-medium">{item.quantityReceived}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Days Supply</span>
+                <span className="font-medium">{item.daysSupply} days</span>
+              </div>
+            </div>
           </div>
-          Selected Day: {selectedDay && dayjs(selectedDay).format(DATE_FORMAT)}
-          {takenDates.find((takenDate) =>
-            dayjs(takenDate.takenDate).isSame(dayjs(selectedDay), "day"),
-          ) ? (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() =>
-                onClickCancelTakenDose(
-                  takenDates.find((t) =>
-                    dayjs(t.takenDate).isSame(dayjs(selectedDay), "day"),
-                  )?.id ?? null,
-                )
-              }
-            >
-              Mark as not taken
-            </Button>
-          ) : (
-            <Button size="sm" onClick={onClickTakenDose}>
-              Mark as taken
-            </Button>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Clock className="h-5 w-5 text-primary" />
+              Supply Information
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Refill Date</span>
+                <span className="font-medium">
+                  {dayjs(item.nextRefill).format(DATE_FORMAT)}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Remaining Supply</span>
+                <span className="font-medium">{item.remainingSupply}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4 mx-auto">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-primary" />
+            Adherence Calendar
+          </h3>
+          <div className="flex justify-center">
+            <div className="relative w-full">
+              <Calendar
+                mode="single"
+                required
+                selected={selectedDay}
+                onSelect={setSelectedDay}
+                modifiers={{
+                  disabled: { after: today.toDate() },
+                  active: takenDates.map(
+                    (takenDate) => new Date(takenDate.takenDate),
+                  ),
+                }}
+                modifiersClassNames={{
+                  active: "rounded-md bg-primary text-primary-foreground",
+                }}
+                className="rounded-lg border"
+              />
+              {isLoadingDates ? (
+                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-background/30">
+                  <Spinner className="w-4 h-4 animate-spin" />
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          {selectedDay && (
+            <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm font-medium">
+                Selected:{" "}
+                {selectedDay.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </p>
+
+              {takenDates.find((takenDate) =>
+                dayjs(takenDate.takenDate).isSame(dayjs(selectedDay), "day"),
+              ) ? (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() =>
+                    onClickCancelTakenDose(
+                      takenDates.find((t) =>
+                        dayjs(t.takenDate).isSame(dayjs(selectedDay), "day"),
+                      )?.id ?? null,
+                    )
+                  }
+                >
+                  Mark as not taken
+                </Button>
+              ) : (
+                <Button size="sm" onClick={onClickTakenDose}>
+                  Mark as taken
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </div>

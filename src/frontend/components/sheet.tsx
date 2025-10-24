@@ -5,7 +5,6 @@ import {
   SheetContent,
   SheetTitle,
 } from "@/frontend/components/ui/sheet";
-import { Separator } from "@/frontend/components/ui/separator";
 
 type Props = PropsWithChildren<{
   isOpen: boolean;
@@ -20,9 +19,9 @@ export const Sheet = (props: Props) => {
     <SheetComponent open={isOpen} onOpenChange={onClose}>
       <SheetContent
         side="right"
-        className="overflow-y-auto px-4 pb-4 sm:max-w-none sm:w-3/7"
+        className="overflow-y-auto px-6 py-6 sm:max-w-none sm:w-4/7"
       >
-        <SheetTitle className="sticky top-0 bg-white py-4">{header}</SheetTitle>
+        <SheetTitle className="">{header}</SheetTitle>
 
         {children}
       </SheetContent>
