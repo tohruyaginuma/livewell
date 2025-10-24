@@ -15,17 +15,20 @@ import { UserMedicationStatusListItemResponse } from "@/server/service/user-medi
 import { Spinner } from "./ui/spinner";
 import { Separator } from "./ui/separator";
 import { CalendarIcon, Clock, Pill } from "lucide-react";
+import { DtItem } from "./dt-item";
+import { UserMedicationListItemResponse } from "@/server/service/user-medication-list-item-response";
 
 type props = {
+  item: UserMedicationListItemResponse | null;
   callback: () => void;
 };
 
 export const SheetMedication = (props: props) => {
-  const { callback } = props;
+  const { item, callback } = props;
 
   const today = dayjs();
 
-  const { isOpen, item, onClose } = useSheetMedicationStore();
+  const { isOpen, onClose } = useSheetMedicationStore();
 
   const [isLoadingDates, setIsLoadingDates] = useState(false);
 
@@ -152,28 +155,14 @@ export const SheetMedication = (props: props) => {
               Medication Details
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Dosage</span>
-                <span className="font-medium">{item.dosage} pill(s)</span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Frequency</span>
-                <span className="font-medium">{item.frequency}x daily</span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Start Date</span>
-                <span className="font-medium">
-                  {dayjs(item.startDate).format(DATE_FORMAT)}
-                </span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Quantity Received</span>
-                <span className="font-medium">{item.quantityReceived}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Days Supply</span>
-                <span className="font-medium">{item.daysSupply} days</span>
-              </div>
+              <DtItem label="Dosage" value={item.dosage} />
+              <DtItem label="Frequency" value={`${item.frequency}x daily`} />
+              <DtItem
+                label="Start Date"
+                value={dayjs(item.startDate).format(DATE_FORMAT)}
+              />
+              <DtItem label="Quantity Received" value={item.quantityReceived} />
+              <DtItem label="Days Supply" value={item.daysSupply} />
             </div>
           </div>
 
@@ -183,16 +172,11 @@ export const SheetMedication = (props: props) => {
               Supply Information
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Refill Date</span>
-                <span className="font-medium">
-                  {dayjs(item.nextRefill).format(DATE_FORMAT)}
-                </span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Remaining Supply</span>
-                <span className="font-medium">{item.remainingSupply}</span>
-              </div>
+              <DtItem
+                label="Refill Date"
+                value={dayjs(item.nextRefill).format(DATE_FORMAT)}
+              />
+              <DtItem label="Remaining Supply" value={item.remainingSupply} />
             </div>
           </div>
         </div>

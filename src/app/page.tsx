@@ -18,6 +18,7 @@ import { useSheetMedicationStore } from "@/frontend/stores/use-sheet-medication-
 
 export default function Home() {
   const { setMe } = useMeStore();
+
   const {
     onOpen: onOpenCreateMedicationDrawer,
     onClose: onCloseCreateMedicationDrawer,
@@ -27,9 +28,14 @@ export default function Home() {
     UserMedicationListItemResponse[]
   >([]);
 
+  const [selectedMedicationId, setSelectedMedicationId] = useState<
+    number | undefined
+  >(undefined);
+
   const { onClose: onCloseDeleteMedicationAlert } =
     useDeleteMedicationAlertStore();
-  const { onClose: onCloseSheetMedication } = useSheetMedicationStore();
+  const { onOpen: onOpenSheetMedication, onClose: onCloseSheetMedication } =
+    useSheetMedicationStore();
   const { onClose: onCloseEditMedication } = useEditMedicationDrawerStore();
 
   const fetchData = useCallback(async () => {
@@ -84,7 +90,14 @@ export default function Home() {
           Add Medication
         </Button>
       </div>
-      <Table items={userMedications} isLoading={isLoading} />
+      <Table
+        items={userMedications}
+        isLoading={isLoading}
+        onViewClick={(id) => {
+          setSelectedMedicationId(id);
+          onOpenSheetMedication();
+        }}
+      />
       <DrawerMedicationCreate
         callback={async () => {
           await fetchData();
@@ -92,6 +105,11 @@ export default function Home() {
         }}
       />
       <SheetMedication
+        item={
+          userMedications.find(
+            (medication) => medication.id === selectedMedicationId,
+          ) || null
+        }
         callback={async () => {
           await fetchData();
         }}

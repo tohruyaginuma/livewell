@@ -15,17 +15,16 @@ import type { UserMedicationListItemResponse } from "@/server/service/user-medic
 import { Spinner } from "./ui/spinner";
 import { StatusBadge } from "./status-badge";
 import dayjs from "dayjs";
-import { useSheetMedicationStore } from "../stores/use-sheet-medication-store";
 import { DATE_FORMAT } from "@/shared/constants";
 
 type Props = {
   items: UserMedicationListItemResponse[];
+  onViewClick: (id: number) => void;
   isLoading: boolean;
 };
 
 export const Table = (props: Props) => {
-  const { items, isLoading } = props;
-  const { onOpen } = useSheetMedicationStore();
+  const { items, onViewClick, isLoading } = props;
 
   return (
     <TableComponent>
@@ -69,7 +68,13 @@ export const Table = (props: Props) => {
               </TableCell>
               <TableCell className="text-center">{item.adherence}%</TableCell>
               <TableCell className="text-right">
-                <Button asChild variant="outline" onClick={() => onOpen(item)}>
+                <Button
+                  asChild
+                  variant="outline"
+                  onClick={() => onViewClick(item.id)}
+                  size="sm"
+                  className="cursor-pointer"
+                >
                   <div className="flex items-center gap-2">
                     <IconEye />
                     View
