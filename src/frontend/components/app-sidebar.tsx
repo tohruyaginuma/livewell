@@ -1,7 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { IconDashboard, IconInnerShadowTop } from "@tabler/icons-react";
+import {
+  IconBrandGithub,
+  IconDashboard,
+  IconInnerShadowTop,
+} from "@tabler/icons-react";
 
 import { NavMain } from "@/frontend/components/nav-main";
 import { NavUser } from "@/frontend/components/nav-user";
@@ -15,6 +19,7 @@ import {
   SidebarMenuItem,
 } from "@/frontend/components/ui/sidebar";
 import { useMeStore } from "@/frontend/stores/use-me-store";
+import { NavSecondary } from "@/frontend/components/nav-secondary";
 
 const data = {
   navMain: [
@@ -22,6 +27,13 @@ const data = {
       title: "Medications",
       url: "/",
       icon: IconDashboard,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "GitHub",
+      url: "https://github.com/tohruyaginuma/medication-management-app",
+      icon: IconBrandGithub,
     },
   ],
 };
@@ -50,6 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={{ id: id, name: name }} />
