@@ -194,7 +194,10 @@ export const SheetMedication = (props: props) => {
                 selected={selectedDay}
                 onSelect={setSelectedDay}
                 modifiers={{
-                  disabled: { after: today.toDate() },
+                  disabled: {
+                    before: new Date(item.startDate),
+                    after: today.toDate(),
+                  },
                   active: takenDates.map(
                     (takenDate) => new Date(takenDate.takenDate),
                   ),

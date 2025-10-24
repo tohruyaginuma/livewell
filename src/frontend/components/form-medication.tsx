@@ -129,6 +129,7 @@ export const FormMedication = (props: props) => {
                 <FormLabel>Dosage</FormLabel>
                 <FormControl>
                   <Input
+                    min={0}
                     type="number"
                     placeholder="Dosage"
                     {...field}
@@ -147,6 +148,7 @@ export const FormMedication = (props: props) => {
                 <FormLabel>Frequency</FormLabel>
                 <FormControl>
                   <Input
+                    min={0}
                     type="number"
                     placeholder="Frequency"
                     {...field}
@@ -167,6 +169,7 @@ export const FormMedication = (props: props) => {
                 <FormLabel>Quantity Received</FormLabel>
                 <FormControl>
                   <Input
+                    min={0}
                     type="number"
                     placeholder="Quantity Received"
                     {...field}
@@ -185,6 +188,7 @@ export const FormMedication = (props: props) => {
                 <FormLabel>Days Supply</FormLabel>
                 <FormControl>
                   <Input
+                    min={0}
                     type="number"
                     placeholder="Days Supply"
                     {...field}
@@ -204,7 +208,12 @@ export const FormMedication = (props: props) => {
             <FormItem>
               <FormLabel>Start Date</FormLabel>
               <FormControl>
-                <Input type="date" placeholder="Start Date" {...field} />
+                <Input
+                  max={new Date().toISOString().split("T")[0]}
+                  type="date"
+                  placeholder="Start Date"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

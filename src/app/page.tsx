@@ -36,7 +36,6 @@ export default function Home() {
     useDeleteMedicationAlertStore();
   const { onOpen: onOpenSheetMedication, onClose: onCloseSheetMedication } =
     useSheetMedicationStore();
-  const { onClose: onCloseEditMedication } = useEditMedicationDrawerStore();
 
   const fetchData = useCallback(async () => {
     try {
@@ -69,7 +68,6 @@ export default function Home() {
   const onClickEditMedication = async () => {
     await fetchData();
     onCloseSheetMedication();
-    onCloseEditMedication();
 
     toast.success("Medication updated successfully");
   };
