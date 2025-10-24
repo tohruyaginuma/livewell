@@ -148,11 +148,7 @@ export const SheetMedication = () => {
           <DtItem label="Medication Remaining" value={item.quantityReceived} />
         </dl>
         <div className="flex flex-col gap-2 w-fit">
-          {isLoadingDates ? (
-            <div className="flex justify-center items-center h-full">
-              <Spinner className="w-4 h-4 animate-spin" />
-            </div>
-          ) : (
+          <div className="relative w-full">
             <Calendar
               mode="single"
               required
@@ -169,7 +165,12 @@ export const SheetMedication = () => {
               }}
               className="rounded-lg border"
             />
-          )}
+            {isLoadingDates ? (
+              <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-background/30">
+                <Spinner className="w-4 h-4 animate-spin" />
+              </div>
+            ) : null}
+          </div>
           Selected Day: {selectedDay && dayjs(selectedDay).format(DATE_FORMAT)}
           {takenDates.find((takenDate) =>
             dayjs(takenDate.takenDate).isSame(dayjs(selectedDay), "day"),
