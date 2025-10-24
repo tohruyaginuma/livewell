@@ -91,7 +91,11 @@ export default function Home() {
           onCloseCreateMedicationDrawer();
         }}
       />
-      <SheetMedication />
+      <SheetMedication
+        callback={async () => {
+          await fetchData();
+        }}
+      />
       <DeleteMedicationAlertDialog callback={onClickDeleteMedication} />
       <DrawerMedicationEdit callback={onClickEditMedication} />
     </>

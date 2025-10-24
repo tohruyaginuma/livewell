@@ -6,7 +6,6 @@ import { useEditMedicationDrawerStore } from "@/frontend/stores/use-edit-medicat
 import { useSheetMedicationStore } from "@/frontend/stores/use-sheet-medication-store";
 import { StatusBadge } from "./status-badge";
 import { Progress } from "./ui/progress";
-import { DtItem } from "@/frontend/components/dt-item";
 import { Calendar } from "@/frontend/components/ui/calendar";
 import { useCallback, useEffect, useState } from "react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
@@ -17,7 +16,13 @@ import { Spinner } from "./ui/spinner";
 import { Separator } from "./ui/separator";
 import { CalendarIcon, Clock, Pill } from "lucide-react";
 
-export const SheetMedication = () => {
+type props = {
+  callback: () => void;
+};
+
+export const SheetMedication = (props: props) => {
+  const { callback } = props;
+
   const today = dayjs();
 
   const { isOpen, item, onClose } = useSheetMedicationStore();
@@ -58,6 +63,8 @@ export const SheetMedication = () => {
       toast.success("Taken dose successfully");
     } catch (error) {
       toast.error("Failed to take dose");
+    } finally {
+      callback();
     }
   };
 
@@ -76,6 +83,8 @@ export const SheetMedication = () => {
       toast.success("Cancelled taken dose");
     } catch (error) {
       toast.error("Failed to cancel taken dose");
+    } finally {
+      callback();
     }
   };
 
